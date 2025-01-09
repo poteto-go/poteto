@@ -26,6 +26,15 @@ You can start hot-reload poteto app.
 go install github.com/poteto-go/poteto-cli/cmd/poteto-cli@latest
 ```
 
+OR build from docker image
+
+https://hub.docker.com/repository/docker/poteto17/poteto-go/general
+
+```sh
+docker pull poteto17/poteto-go
+docker -it --rm poteto17/poteto-go:1.23 bash
+```
+
 detail on:
 
 https://github.com/poteto-go/poteto-cli
