@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100">
+  <!-- Background rectangle for better visibility (transparent) -->
+  <rect width="400" height="100" fill="transparent"/>
+  
+  <!-- Go-style three lines next to P -->
+  <path d="M15 30 L45 30" stroke="#00ADD8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M15 45 L45 45" stroke="#00ADD8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M15 60 L45 60" stroke="#00ADD8" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- "Po" in Go blue -->
+  <text x="50" y="70" font-family="Arial" font-size="80" font-weight="bold" fill="#00ADD8">Po</text>
+  
+  <!-- "teto" in dark gray with reduced spacing -->
+  <text x="155" y="70" font-family="Arial" font-size="80" font-weight="bold" fill="#333333">teto</text>
+</svg>
