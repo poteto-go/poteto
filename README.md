@@ -1,6 +1,6 @@
 # Poteto
 
-![](https://github.com/user-attachments/assets/7e503083-0af0-4b95-8277-46dfb8166cb9)
+<img src="image/logo.svg">
 
 ## Simple Web Framework of GoLang
 
