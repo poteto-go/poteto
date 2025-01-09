@@ -1,6 +1,6 @@
 # Poteto
 
-<img src="assets/logo.png">
+<img src="assets/logo.svg">
 
 ## Simple Web Framework of GoLang
 
