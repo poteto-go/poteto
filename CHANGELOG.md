@@ -1,5 +1,15 @@
 # 1.x.x
 
+## 1.1.X
+
+### 1.1.0
+
+- DOC: on poteto-cli docker by @poteto0 in #185
+- [potet-cli] REF: prepare docker image by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/6
+- [potet-cli] BUG: fix wrong dependency by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/6
+- [potet-cli] BUG: fix version by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/6
+- [potet-cli] CHANGE: template by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/6
+
 ## 1.0.x
 
 ### 1.0.1
