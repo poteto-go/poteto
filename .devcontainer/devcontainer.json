@@ -1,7 +1,11 @@
 {
   "name": "Go",
   "dockerFile": "./Dockerfile",
-  "postCreateCommand": "bash .devcontainer/scripts/postCreateCommand.sh && go mod download",
+  "features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+  "postCreateCommand": "bash .devcontainer/scripts/postCreateCommand.sh",
+  "remoteUser": "vscode",
   "customizations": {
     "vscode": {
       "extensions": [
