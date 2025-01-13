@@ -2,6 +2,12 @@
 
 ## 1.1.X
 
+### 1.1.1
+
+- CHANGE: devcontainer.json to show git branch by @eaggle23 in #198
+- [potet-cli] FEAT: `poteto-cli -v | --version` by @eaggle23 in https://github.com/poteto-go/poteto-cli/pull/9
+- [potet-cli] CHANGE: devcontainer.json to show git branch name by @eaggle in https://github.com/poteto-go/poteto-cli/pull/10
+
 ### 1.1.0
 
 - DOC: on poteto-cli docker by @poteto0 in #185
