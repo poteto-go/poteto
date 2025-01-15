@@ -1,0 +1,19 @@
+name: potetobot
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  put-comment-by-linter:
+    uses: ./.github/workflows/lint.yaml
+    with:
+      enable_pr_comment: true
+    permissions:
+      contents: read
+      pull-requests: write

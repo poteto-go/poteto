@@ -1,0 +1,48 @@
+name: Lint
+
+on:
+  workflow_call:
+    inputs:
+      enable_pr_comment:
+        description: 'Enable PR comment'
+        required: false
+        default: true
+        type: 'boolean'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Use golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.x"
+      - name: Install ruleguard
+        run: go install -v github.com/quasilyte/go-ruleguard/cmd/ruleguard@latest
+      - id: lint
+        name: Run linter
+        continue-on-error: true
+        run: |
+          ruleguard -fix -rules ./rules/linter.go . || echo $? >> $LINT_RESULT
+      - name: Create comment file
+        if: ${{ inputs.enable_pr_comment == true }}
+        run: |
+          cat  << EOF > comment.md
+          Hello I'm Potetobot : ).
+          Thank you for your contribution.
+          Linting results are as follows (if none, it means no issues were found):
+          $(cat $LINT_RESULT)
+          EOF
+      - name: Create PR comment
+        if: ${{ inputs.enable_pr_comment == true }}
+        run: |
+          gh pr comment ${{ github.event.number }} --body-file comment.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
