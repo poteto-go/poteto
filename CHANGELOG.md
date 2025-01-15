@@ -4,6 +4,7 @@
 
 ### 1.1.1
 
+- [poteto-cli] DEP: make poteto latest by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/13
 - BUG: fix version by @poteto0 in #196
 - CI/CD: potetobot comment on PR by @poteto0 in #194
 - OP: add linter by @poteto0 in #194
