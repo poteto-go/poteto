@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   put-comment-test:
-    uses: ./.github/workflows/lint.yml
+    uses: ./.github/workflows/lint.yaml
     with:
       enable_pr_comment: true
     permissions:
