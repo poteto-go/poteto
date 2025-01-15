@@ -4,7 +4,11 @@
 
 ### 1.1.1
 
-- CHANGE: devcontainer.json to show git branch by @eaggle23 in #198
+- [poteto-cli] DEP: make poteto latest by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/13
+- BUG: fix version by @poteto0 in #196
+- CI/CD: potetobot comment on PR by @poteto0 in #194
+- OP: add linter by @poteto0 in #194
+- CHANGE: devcontainer.json to show git branch by @eaggle23 in #191
 - [potet-cli] FEAT: `poteto-cli -v | --version` by @eaggle23 in https://github.com/poteto-go/poteto-cli/pull/9
 - [potet-cli] CHANGE: devcontainer.json to show git branch name by @eaggle in https://github.com/poteto-go/poteto-cli/pull/10
 
