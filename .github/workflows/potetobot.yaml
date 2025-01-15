@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  put-comment-test:
+  put-comment-by-linter:
     uses: ./.github/workflows/lint.yaml
     with:
       enable_pr_comment: true
