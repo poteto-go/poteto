@@ -26,8 +26,10 @@ jobs:
       # https://github.com/poteto-go/poteto/issues/169
       - name: Test
         run: go test ./... -coverprofile cover.out.tmp -bench . -benchtime 100000x -gcflags=all=-l
+      - name: remove ruleguard path
+        run: cat cover.out.tmp | grep -v "github.com/poteto-go/poteto/rules" > coverage.out.tmp
       - name: remove not constant path
-        run: cat cover.out.tmp | grep -v "github.com/poteto-go/poteto/constant" > coverage.txt
+        run: cat coverage.out.tmp | grep -v "github.com/poteto-go/poteto/constant" > coverage.txt
 
       - name: upload coverage
         uses: codecov/codecov-action@v1
