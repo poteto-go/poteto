@@ -1,4 +1,4 @@
-name: Check Pull Request
+name: potetobot
 
 on:
   pull_request:

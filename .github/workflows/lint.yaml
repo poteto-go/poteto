@@ -27,10 +27,10 @@ jobs:
       - name: Install ruleguard
         run: go install -v github.com/quasilyte/go-ruleguard/cmd/ruleguard@latest
       - id: test
-        name: Run tests
+        name: Run linter
         continue-on-error: true
         run: |
-          ruleguard -fix -rules ./rules/linter.go . || echo $? >> $GITHUB_OUTPUT
+          ruleguard -fix -rules ./rules/linter.go . || echo $? >> $LINT_RESULT
       - name: Create comment file
         if: ${{ inputs.enable_pr_comment == true }}
         run: |
@@ -38,7 +38,7 @@ jobs:
           Hello I'm Potetobot.
           Thank you for your contribution.
           Linting results are as follows:
-          $GITHUB_OUTPUT
+          $(cat $LINT_RESULT)
           EOF
       - name: Create PR comment
         if: ${{ inputs.enable_pr_comment == true }}
