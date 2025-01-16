@@ -41,7 +41,7 @@ jobs:
           Thank you for your contribution.
           Linting results are as follows (if none, it means no issues were found):
           \`\`\`json
-          $(cat $result.json)
+          $(ruleguard -json -rules ./rules/linter.go ./...)
           \`\`\`
           EOF
       - name: Create PR comment
