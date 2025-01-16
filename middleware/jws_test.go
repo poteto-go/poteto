@@ -89,7 +89,7 @@ func TestKeyFunc(t *testing.T) {
 
 				switch asserted := any(val).(type) {
 				case []byte:
-					if !utils.SliceEqual[byte](asserted, it.expectSignKey) {
+					if !utils.IsSliceEqual[byte](asserted, it.expectSignKey) {
 						t.Errorf(
 							"Unmatched actual(%v) -> expected(%v)",
 							val,
