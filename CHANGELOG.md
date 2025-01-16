@@ -1,6 +1,12 @@
 # 1.x.x
 
 ## 1.2.X
+### 1.2.1
+
+- [poteto-cli] SAME by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/15
+- LINT: fix with linter by @poteto0 in #200
+- BUG: fix not work linter by @poteto0 in #199
+
 ### 1.2.0
 
 - [poteto-cli] DEP: make poteto latest by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/13
