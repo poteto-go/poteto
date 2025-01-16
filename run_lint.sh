@@ -1,3 +1,3 @@
 #!bin/bash
 
-ruleguard -fix -rules ./rules/linter.go .
+ruleguard -json -rules ./rules/linter.go ./...
