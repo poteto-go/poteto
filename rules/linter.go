@@ -161,6 +161,5 @@ func badLock(m dsl.Matcher) {
 func errorsIsNotUsed(m dsl.Matcher) {
 	m.Match(`err == $target`).
 		Where(m["target"].Type.Is("error")).
-		Report("err should be checked using errors.Is").
-		Suggest("errors.Is(err, $target)")
+		Report("err should be checked using errors.Is")
 }
