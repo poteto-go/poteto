@@ -2,7 +2,7 @@ package utils
 
 import "testing"
 
-func TestSliceEqual(t *testing.T) {
+func TestIsSliceEqual(t *testing.T) {
 	tests := []struct {
 		name     string
 		vec1     []any
@@ -17,7 +17,7 @@ func TestSliceEqual(t *testing.T) {
 
 	for _, it := range tests {
 		t.Run(it.name, func(t *testing.T) {
-			result := SliceEqual(it.vec1, it.vec2)
+			result := IsSliceEqual(it.vec1, it.vec2)
 			if result != it.expected {
 				t.Errorf("FATAL")
 			}

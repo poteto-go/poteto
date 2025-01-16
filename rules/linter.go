@@ -7,8 +7,8 @@ import "github.com/quasilyte/go-ruleguard/dsl"
 
 func boolFunctionNaming(m dsl.Matcher) {
 	m.Match(`func $name($*params) bool { $*body }`).
-		Where(!m["name"].Text.Matches(`^(Is|is|Has|has).*`)).
-		Report("bool function name should start with 'Is' | 'is' | 'Has' | 'has'")
+		Where(!m["name"].Text.Matches(`^(Is|is|Has|has|match|Match).*`)).
+		Report("bool function name should start with 'Is' | 'is' | 'Has' | 'has' | 'match' | 'Match'")
 }
 
 func boolExprSimplify(m dsl.Matcher) {
