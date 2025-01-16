@@ -2,6 +2,7 @@ package poteto
 
 import (
 	"crypto/tls"
+	"errors"
 	"net"
 	"net/http"
 	"strings"
@@ -166,7 +167,7 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 	p.Server.TLSConfig = &tls.Config{}
 	p.Server.TLSConfig.Certificates = make([]tls.Certificate, 1)
 	parsedCert, err := tls.X509KeyPair(cert, key)
-	if err != nil {
+	if errors.Is(err, errors.New("error")) {
 		p.startupMutex.Unlock()
 		return err
 	}

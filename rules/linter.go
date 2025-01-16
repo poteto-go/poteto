@@ -157,3 +157,10 @@ func badLock(m dsl.Matcher) {
 		Report(`maybe defer $mu1.RUnlock() was intended?`).
 		At(m["mu2"])
 }
+
+func errorsIsNotUsed(m dsl.Matcher) {
+	m.Match(`err == $target`).
+		Where(m["target"].Type.Is("error")).
+		Report("err should be checked using errors.Is").
+		Suggest("errors.Is(err, $target)")
+}
