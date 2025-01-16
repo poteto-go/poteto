@@ -30,8 +30,8 @@ jobs:
         name: Run linter
         continue-on-error: true
         run: |
-          cat <<EOF > result.txt
-            ruleguard -fix -rules ./rules/linter.go . 
+          cat <<EOF > result.json
+            $(./run_lint.sh)
           EOF
       - name: Create comment file
         if: ${{ inputs.enable_pr_comment == true }}
@@ -40,7 +40,9 @@ jobs:
           Hello I'm Potetobot : ).
           Thank you for your contribution.
           Linting results are as follows (if none, it means no issues were found):
-          $(cat $result.txt)
+          \`\`\`json
+          $(cat $result.json)
+          \`\`\`
           EOF
       - name: Create PR comment
         if: ${{ inputs.enable_pr_comment == true }}
