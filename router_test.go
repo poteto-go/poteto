@@ -1,7 +1,6 @@
 package poteto
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 )
@@ -33,7 +32,7 @@ func TestAdd(t *testing.T) {
 		t.Run(it.name, func(tt *testing.T) {
 			err := rtr.add(it.method, it.path, nil)
 			if it.want {
-				if err == errors.New("route already existed") {
+				if err == nil {
 					t.Errorf("FATAL: success already existed route")
 				}
 			} else {
