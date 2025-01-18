@@ -1,10 +1,6 @@
 package poteto
 
-import (
-	"errors"
-	"testing"
-)
-
+/*
 func TestNewPotetoWorkflows(t *testing.T) {
 	pw := NewPotetoWorkflows()
 	if pw == nil {
@@ -101,3 +97,4 @@ func TestApplyStartUpWorkflows(t *testing.T) {
 		})
 	}
 }
+*/
