@@ -1,6 +1,6 @@
 module github.com/poteto-go/poteto
 
-go 1.21.8
+go 1.23
 
 require (
 	bou.ke/monkey v1.0.2
