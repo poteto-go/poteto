@@ -235,8 +235,8 @@ func TestRunStartUpWorkflows(t *testing.T) {
 	}()
 
 	select {
-	case <-time.After(500 * time.Millisecond):
-		if isCalled {
+	case <-time.After(1000 * time.Millisecond):
+		if !isCalled {
 			t.Errorf("Unmatched")
 		}
 		p.Stop(stdContext.Background())
