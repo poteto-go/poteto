@@ -232,7 +232,7 @@ func TestRunStartUpWorkflows(t *testing.T) {
 	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, workflowFunc)
 
 	go func() {
-		p.Run("91")
+		p.Run("3031")
 	}()
 
 	select {
@@ -254,7 +254,7 @@ func TestRunStartUpWorkflowsError(t *testing.T) {
 
 	errChan := make(chan error)
 	go func() {
-		errChan <- p.Run("95")
+		errChan <- p.Run("3032")
 	}()
 
 	select {
