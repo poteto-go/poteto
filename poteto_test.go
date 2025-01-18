@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -221,11 +222,13 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 }
 
 func TestRunStartUpWorkflows(t *testing.T) {
+	var mu sync.Mutex
 	isCalled := false
 	p := New()
 	calledFunc := func() error {
+		mu.Lock()
+		defer mu.Unlock()
 		isCalled = true
-		t.Log("calledFunc executed")
 		return nil
 	}
 
@@ -237,6 +240,8 @@ func TestRunStartUpWorkflows(t *testing.T) {
 
 	select {
 	case <-time.After(500 * time.Millisecond):
+		mu.Lock()
+		defer mu.Unlock()
 		if !isCalled {
 			t.Logf("isCalled: %v", isCalled)
 			t.Errorf("Unmatched")
