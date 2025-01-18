@@ -26,6 +26,9 @@ type Poteto interface {
 	SetLogger(logger any)
 	Leaf(basePath string, handler LeafHandler)
 
+	// PostStartUp is a function that is called just before the server starts.
+	RegisterStartUpWorkflow(handler WorkflowFunc)
+
 	GET(path string, handler HandlerFunc) error
 	POST(path string, handler HandlerFunc) error
 	PUT(path string, handler HandlerFunc) error
@@ -38,15 +41,16 @@ type Poteto interface {
 }
 
 type poteto struct {
-	router         Router
-	errorHandler   HttpErrorHandler
-	middlewareTree MiddlewareTree
-	logger         any
-	cache          sync.Pool
-	option         PotetoOption
-	startupMutex   sync.RWMutex
-	Server         http.Server
-	Listener       net.Listener
+	router           Router
+	errorHandler     HttpErrorHandler
+	middlewareTree   MiddlewareTree
+	logger           any
+	cache            sync.Pool
+	option           PotetoOption
+	startupMutex     sync.RWMutex
+	Server           http.Server
+	Listener         net.Listener
+	startUpWorkflows []WorkflowFunc
 }
 
 func New() Poteto {
@@ -181,6 +185,16 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 
 	utils.PotetoPrint("server is available at https://127.0.0.1" + addr + "\n")
 
+	// Run StartUpWorkflows just before the server starts
+	if len(p.startUpWorkflows) > 0 {
+		for _, workflow := range p.startUpWorkflows {
+			if err := workflow(); err != nil {
+				p.startupMutex.Unlock()
+				return err
+			}
+		}
+	}
+
 	p.startupMutex.Unlock()
 	return p.Server.Serve(p.Listener)
 }
@@ -236,6 +250,10 @@ func (p *poteto) Combine(pattern string, middlewares ...MiddlewareFunc) *middlew
 
 func (p *poteto) SetLogger(logger any) {
 	p.logger = logger
+}
+
+func (p *poteto) RegisterStartUpWorkflow(handler WorkflowFunc) {
+	p.startUpWorkflows = append(p.startUpWorkflows, handler)
 }
 
 // Leaf makes router group
