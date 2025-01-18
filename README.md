@@ -7,7 +7,7 @@
 We have confirmed that it works with various versions: go@1.21.x, go@1.22.x, go@1.23.x
 
 ```bash
-go get github.com/poteto-go/poteto@latest
+go get -u github.com/poteto-go/poteto@latest
 # or
 go mod tidy
 ```
