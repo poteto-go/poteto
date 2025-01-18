@@ -1,5 +1,11 @@
 # 1.x.x
 
+## 1.3.X
+### 1.3.0
+
+- DEP: Poteto's go version update -> 1.23 by @poteto0 in #207
+- FEAT: startUpWorkflows run function just before server start in #204
+
 ## 1.2.X
 ### 1.2.1
 
