@@ -39,6 +39,9 @@ func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 		errChan <- p.Run(":6000")
 	}()
 
+	// wait start up
+	time.Sleep(1000 * time.Millisecond)
+
 	// client
 	added := 10
 	add := 10
@@ -75,6 +78,9 @@ func TestPotetoJSONRPCAdapterCallReturnVoid(t *testing.T) {
 	go func() {
 		errChan <- p.Run(":6001")
 	}()
+
+	// wait start up
+	time.Sleep(1000 * time.Millisecond)
 
 	// client
 	added := 10

@@ -1,7 +1,6 @@
 package poteto
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
@@ -22,7 +21,6 @@ var (
 // https://github.com/kanocz/goginjsonrpc/blob/master/jsonrpc.go
 // * Only Support "POST" method
 func PotetoJsonRPCAdapter[T any, S any](ctx Context, api *T) error {
-	fmt.Println("おはよーーー")
 	if ctx.GetRequest().Method != http.MethodPost {
 		return ctx.JSONRPCError(
 			rpcErrorStatus,
