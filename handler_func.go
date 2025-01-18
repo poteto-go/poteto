@@ -1,6 +1,6 @@
 package poteto
 
-type WorkflowFunc func(args ...any) error
+type WorkflowFunc func() error
 
 type HandlerFunc func(ctx Context) error
 
