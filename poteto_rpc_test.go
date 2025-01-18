@@ -36,7 +36,7 @@ func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 
 	errChan := make(chan error)
 	go func() {
-		errChan <- p.Run("127.0.0.1:6000")
+		errChan <- p.Run(":6000")
 	}()
 
 	// client
@@ -73,7 +73,7 @@ func TestPotetoJSONRPCAdapterCallReturnVoid(t *testing.T) {
 
 	errChan := make(chan error)
 	go func() {
-		errChan <- p.Run("127.0.0.1:6001")
+		errChan <- p.Run(":6001")
 	}()
 
 	// client

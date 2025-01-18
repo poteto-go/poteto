@@ -24,7 +24,9 @@ type potetoWorkflows struct {
 }
 
 func NewPotetoWorkflows() PotetoWorkflows {
-	return &potetoWorkflows{}
+	return &potetoWorkflows{
+		startUpWorkflows: []UnitWorkflow{},
+	}
 }
 
 func (pw *potetoWorkflows) RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc) {
