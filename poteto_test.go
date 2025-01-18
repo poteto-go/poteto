@@ -221,8 +221,6 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 }
 
 func TestRunStartUpWorkflows(t *testing.T) {
-	defer monkey.UnpatchAll()
-
 	isCalled := false
 
 	p := New()

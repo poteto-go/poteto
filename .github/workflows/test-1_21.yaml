@@ -21,7 +21,7 @@ jobs:
       - name: Use golang
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21.x"
+          go-version: "1.21.8"
       # noinlineによるテスト実行
       # https://github.com/poteto-go/poteto/issues/169
       - name: Test
