@@ -25,4 +25,4 @@ jobs:
       # noinlineによるテスト実行
       # https://github.com/poteto-go/poteto/issues/169
       - name: Test
-        run: go test ./... -cover -bench . -benchtime 100000x -gcflags=all=-l
+        run: go test ./... -cover -bench . -benchtime 100000x -gcflags=all=-l -count=1
