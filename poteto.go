@@ -162,11 +162,9 @@ func (p *poteto) Run(addr string) error {
 
 	// Run StartUpWorkflows just before the server starts
 	workflows := p.potetoWorkflows.(*potetoWorkflows)
-	if workflows != nil {
-		if err := workflows.ApplyStartUpWorkflows(); err != nil {
-			p.startupMutex.Unlock()
-			return err
-		}
+	if err := workflows.ApplyStartUpWorkflows(); err != nil {
+		p.startupMutex.Unlock()
+		return err
 	}
 
 	utils.PotetoPrint("server is available at http://127.0.0.1" + addr + "\n")
@@ -198,11 +196,9 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 
 	// Run StartUpWorkflows just before the server starts
 	workflows := p.potetoWorkflows.(*potetoWorkflows)
-	if workflows != nil {
-		if err := workflows.ApplyStartUpWorkflows(); err != nil {
-			p.startupMutex.Unlock()
-			return err
-		}
+	if err := workflows.ApplyStartUpWorkflows(); err != nil {
+		p.startupMutex.Unlock()
+		return err
 	}
 
 	utils.PotetoPrint("server is available at https://127.0.0.1" + addr + "\n")
@@ -265,7 +261,7 @@ func (p *poteto) SetLogger(logger any) {
 }
 
 func (p *poteto) RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc) {
-	p.potetoWorkflows.RegisterWorkflow(workflowType, priority, workflow)
+	p.potetoWorkflows.(*potetoWorkflows).RegisterWorkflow(workflowType, priority, workflow)
 }
 
 // Leaf makes router group
