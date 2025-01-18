@@ -162,9 +162,11 @@ func (p *poteto) Run(addr string) error {
 
 	// Run StartUpWorkflows just before the server starts
 	workflows := p.potetoWorkflows.(*potetoWorkflows)
-	if err := workflows.ApplyStartUpWorkflows(); err != nil {
-		p.startupMutex.Unlock()
-		return err
+	if workflows != nil {
+		if err := workflows.ApplyStartUpWorkflows(); err != nil {
+			p.startupMutex.Unlock()
+			return err
+		}
 	}
 
 	utils.PotetoPrint("server is available at http://127.0.0.1" + addr + "\n")
@@ -196,9 +198,11 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 
 	// Run StartUpWorkflows just before the server starts
 	workflows := p.potetoWorkflows.(*potetoWorkflows)
-	if err := workflows.ApplyStartUpWorkflows(); err != nil {
-		p.startupMutex.Unlock()
-		return err
+	if workflows != nil {
+		if err := workflows.ApplyStartUpWorkflows(); err != nil {
+			p.startupMutex.Unlock()
+			return err
+		}
 	}
 
 	utils.PotetoPrint("server is available at https://127.0.0.1" + addr + "\n")
