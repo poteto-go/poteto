@@ -25,7 +25,7 @@ jobs:
       # noinlineによるテスト実行
       # https://github.com/poteto-go/poteto/issues/169
       - name: Test
-        run: go test ./... -coverprofile cover.out.tmp -bench . -benchtime 100000x -gcflags=all=-l -count=1
+        run: go test ./... -coverprofile cover.out.tmp -bench . -benchtime 100000x -gcflags=all=-l
       - name: remove ruleguard path
         run: cat cover.out.tmp | grep -v "github.com/poteto-go/poteto/rules" > coverage.out.tmp
       - name: remove not constant path

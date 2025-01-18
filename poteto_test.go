@@ -225,6 +225,7 @@ func TestRunStartUpWorkflows(t *testing.T) {
 	p := New()
 	calledFunc := func() error {
 		isCalled = true
+		t.Log("calledFunc executed")
 		return nil
 	}
 
@@ -235,8 +236,9 @@ func TestRunStartUpWorkflows(t *testing.T) {
 	}()
 
 	select {
-	case <-time.After(1000 * time.Millisecond):
+	case <-time.After(500 * time.Millisecond):
 		if !isCalled {
+			t.Logf("isCalled: %v", isCalled)
 			t.Errorf("Unmatched")
 		}
 		p.Stop(stdContext.Background())
