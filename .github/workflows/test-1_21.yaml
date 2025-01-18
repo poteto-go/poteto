@@ -6,6 +6,7 @@ on:
       - "**.go"
       - "**.md"
       - "**.yaml"
+      - "**.mod"
 
 jobs:
   test:
