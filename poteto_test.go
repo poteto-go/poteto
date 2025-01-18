@@ -223,19 +223,15 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 func TestRunStartUpWorkflows(t *testing.T) {
 	defer monkey.UnpatchAll()
 
-	isCalledOsWd := false
-	monkey.Patch(os.Getwd, func() (string, error) {
-		isCalledOsWd = true
-		return "wd", nil
-	})
+	isCalled := false
 
 	p := New()
-	calledFunc := func() error {
-		os.Getwd()
+	workflowFunc := func() error {
+		isCalled = true
 		return nil
 	}
 
-	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, calledFunc)
+	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, workflowFunc)
 
 	go func() {
 		p.Run("91")
@@ -243,7 +239,7 @@ func TestRunStartUpWorkflows(t *testing.T) {
 
 	select {
 	case <-time.After(500 * time.Millisecond):
-		if !isCalledOsWd {
+		if !isCalled {
 			t.Errorf("Unmatched")
 		}
 		p.Stop(stdContext.Background())
