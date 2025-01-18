@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func TestNewPotetoWorkflows(t *testing.T) {
+	pw := NewPotetoWorkflows()
+	if pw == nil {
+		t.Errorf("Expected: not nil, Got: nil")
+	}
+}
+
 func TestRegisterWorkflow(t *testing.T) {
 	tests := []struct {
 		name          string

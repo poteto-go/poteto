@@ -57,19 +57,21 @@ type poteto struct {
 
 func New() Poteto {
 	return &poteto{
-		router:         NewRouter(),
-		errorHandler:   &httpErrorHandler{},
-		middlewareTree: NewMiddlewareTree(),
-		option:         DefaultPotetoOption,
+		router:          NewRouter(),
+		errorHandler:    &httpErrorHandler{},
+		middlewareTree:  NewMiddlewareTree(),
+		option:          DefaultPotetoOption,
+		potetoWorkflows: NewPotetoWorkflows(),
 	}
 }
 
 func NewWithOption(option PotetoOption) Poteto {
 	return &poteto{
-		router:         NewRouter(),
-		errorHandler:   &httpErrorHandler{},
-		middlewareTree: NewMiddlewareTree(),
-		option:         option,
+		router:          NewRouter(),
+		errorHandler:    &httpErrorHandler{},
+		middlewareTree:  NewMiddlewareTree(),
+		option:          option,
+		potetoWorkflows: NewPotetoWorkflows(),
 	}
 }
 
@@ -158,6 +160,13 @@ func (p *poteto) Run(addr string) error {
 		return err
 	}
 
+	// Run StartUpWorkflows just before the server starts
+	workflows := p.potetoWorkflows.(*potetoWorkflows)
+	if err := workflows.ApplyStartUpWorkflows(); err != nil {
+		p.startupMutex.Unlock()
+		return err
+	}
+
 	utils.PotetoPrint("server is available at http://127.0.0.1" + addr + "\n")
 
 	p.startupMutex.Unlock()
@@ -185,13 +194,14 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 		return err
 	}
 
-	utils.PotetoPrint("server is available at https://127.0.0.1" + addr + "\n")
-
 	// Run StartUpWorkflows just before the server starts
-	if err := p.potetoWorkflows.ApplyStartUpWorkflows(); err != nil {
+	workflows := p.potetoWorkflows.(*potetoWorkflows)
+	if err := workflows.ApplyStartUpWorkflows(); err != nil {
 		p.startupMutex.Unlock()
 		return err
 	}
+
+	utils.PotetoPrint("server is available at https://127.0.0.1" + addr + "\n")
 
 	p.startupMutex.Unlock()
 	return p.Server.Serve(p.Listener)

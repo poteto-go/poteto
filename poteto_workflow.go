@@ -11,16 +11,20 @@ type UnitWorkflow struct {
 	workflow WorkflowFunc
 }
 
-type potetoWorkflows struct {
-	startUpWorkflows []UnitWorkflow
-}
-
 // workflow is a function that is executed when the server starts | end
 // - constant.START_UP_WORKFLOW: "startUp"
 //   - This is a workflow that is executed when the server starts
 type PotetoWorkflows interface {
 	RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc)
 	ApplyStartUpWorkflows() error
+}
+
+type potetoWorkflows struct {
+	startUpWorkflows []UnitWorkflow
+}
+
+func NewPotetoWorkflows() PotetoWorkflows {
+	return &potetoWorkflows{}
 }
 
 func (pw *potetoWorkflows) RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc) {

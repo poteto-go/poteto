@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"bou.ke/monkey"
+	"github.com/poteto-go/poteto/constant"
 )
 
 func TestAddRouteToPoteto(t *testing.T) {
@@ -184,6 +185,29 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 
 	if err := p.Run("90"); err == nil {
 		t.Errorf("Unmatched")
+	}
+}
+
+func TestRunStartUpWorkflows(t *testing.T) {
+	isCalled := false
+	p := New()
+	calledFunc := func() error {
+		isCalled = true
+		return nil
+	}
+
+	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, calledFunc)
+
+	go func() {
+		p.Run("91")
+	}()
+
+	select {
+	case <-time.After(500 * time.Millisecond):
+		if !isCalled {
+			t.Errorf("Unmatched")
+		}
+		p.Stop(stdContext.Background())
 	}
 }
 
