@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"sync"
 	"testing"
 	"time"
 
@@ -222,13 +221,17 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 }
 
 func TestRunStartUpWorkflows(t *testing.T) {
-	var mu sync.Mutex
-	isCalled := false
+	defer monkey.UnpatchAll()
+
+	isCalledOsWd := false
+	monkey.Patch(os.Getwd, func() (string, error) {
+		isCalledOsWd = true
+		return "wd", nil
+	})
+
 	p := New()
 	calledFunc := func() error {
-		mu.Lock()
-		defer mu.Unlock()
-		isCalled = true
+		os.Getwd()
 		return nil
 	}
 
@@ -240,10 +243,7 @@ func TestRunStartUpWorkflows(t *testing.T) {
 
 	select {
 	case <-time.After(500 * time.Millisecond):
-		mu.Lock()
-		defer mu.Unlock()
-		if !isCalled {
-			t.Logf("isCalled: %v", isCalled)
+		if !isCalledOsWd {
 			t.Errorf("Unmatched")
 		}
 		p.Stop(stdContext.Background())
