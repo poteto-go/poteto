@@ -14,6 +14,8 @@ require (
 	github.com/ybbus/jsonrpc/v3 v3.1.5
 )
 
+require github.com/caarlos0/env/v10 v10.0.0 // indirect
+
 require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect; indirectct
