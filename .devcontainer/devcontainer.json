@@ -12,7 +12,8 @@
         "golang.go",
         "christian-kohler.path-intellisense",
         "streetsidesoftware.code-spell-checker",
-        "oderwat.indent-rainbow"
+        "oderwat.indent-rainbow",
+        "github.copilot",
       ],
       "settings": {
         "editor.tabSize": 2,
