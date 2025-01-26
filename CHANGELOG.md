@@ -4,8 +4,8 @@
 
 ### 1.3.1
 
-- DEBUG: add some debug mode log
-- FEAT: env for setting poteto option
+- DEBUG: add some debug mode log by @poteto0 in #213
+- FEAT: env for setting poteto option by @poteto0 in #213
 - Bump github.com/goccy/go-yaml from 1.15.13 to 1.15.15 in #211
 
 ### 1.3.0
