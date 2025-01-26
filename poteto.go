@@ -10,6 +10,7 @@ import (
 
 	stdContext "context"
 
+	"github.com/caarlos0/env/v11"
 	"github.com/fatih/color"
 	"github.com/poteto-go/poteto/constant"
 	"github.com/poteto-go/poteto/utils"
@@ -57,6 +58,9 @@ type poteto struct {
 }
 
 func New() Poteto {
+	var DefaultPotetoOption PotetoOption
+	env.Parse(&DefaultPotetoOption)
+
 	return &poteto{
 		router:          NewRouter(),
 		errorHandler:    &httpErrorHandler{},
@@ -258,6 +262,7 @@ func (p *poteto) setupServer() error {
 
 	// set listener
 	if p.Listener == nil {
+		utils.PotetoPrint(p.option.ListenerNetwork + "\n")
 		ln, err := net.Listen(p.option.ListenerNetwork, p.Server.Addr)
 		if err != nil {
 			if p.option.DebugMode {

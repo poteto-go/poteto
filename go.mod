@@ -4,6 +4,7 @@ go 1.23
 
 require (
 	bou.ke/monkey v1.0.2
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/fatih/color v1.18.0
 	github.com/goccy/go-json v0.10.4
 	github.com/goccy/go-yaml v1.15.15
