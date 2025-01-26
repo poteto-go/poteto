@@ -2,6 +2,7 @@ package poteto
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net"
 	"net/http"
 	"strings"
@@ -156,6 +157,14 @@ func (p *poteto) Run(addr string) error {
 
 	p.Server.Addr = addr
 	if err := p.setupServer(); err != nil {
+		if p.option.DebugMode {
+			utils.PotetoPrint(
+				fmt.Sprintf(
+					"poteto.setupServer reverted with %s",
+					err.Error(),
+				),
+			)
+		}
 		p.startupMutex.Unlock()
 		return err
 	}
@@ -163,6 +172,14 @@ func (p *poteto) Run(addr string) error {
 	// Run StartUpWorkflows just before the server starts
 	workflows := p.potetoWorkflows.(*potetoWorkflows)
 	if err := workflows.ApplyStartUpWorkflows(); err != nil {
+		if p.option.DebugMode {
+			utils.PotetoPrint(
+				fmt.Sprintf(
+					"workflows.ApplyStartUpWorkflows reverted with %s",
+					err.Error(),
+				),
+			)
+		}
 		p.startupMutex.Unlock()
 		return err
 	}
@@ -182,6 +199,14 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 	p.Server.TLSConfig.Certificates = make([]tls.Certificate, 1)
 	parsedCert, err := tls.X509KeyPair(cert, key)
 	if err != nil {
+		if p.option.DebugMode {
+			utils.PotetoPrint(
+				fmt.Sprintf(
+					"tls.X509KeyPair reverted with %s",
+					err.Error(),
+				),
+			)
+		}
 		p.startupMutex.Unlock()
 		return err
 	}
@@ -190,6 +215,14 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 	// Setup Server
 	p.Server.Addr = addr
 	if err := p.setupServer(); err != nil {
+		if p.option.DebugMode {
+			utils.PotetoPrint(
+				fmt.Sprintf(
+					"poteto.setupServer reverted with %s",
+					err.Error(),
+				),
+			)
+		}
 		p.startupMutex.Unlock()
 		return err
 	}
@@ -197,6 +230,14 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 	// Run StartUpWorkflows just before the server starts
 	workflows := p.potetoWorkflows.(*potetoWorkflows)
 	if err := workflows.ApplyStartUpWorkflows(); err != nil {
+		if p.option.DebugMode {
+			utils.PotetoPrint(
+				fmt.Sprintf(
+					"workflows.ApplyStartUpWorkflows reverted with %s",
+					err.Error(),
+				),
+			)
+		}
 		p.startupMutex.Unlock()
 		return err
 	}
@@ -219,6 +260,14 @@ func (p *poteto) setupServer() error {
 	if p.Listener == nil {
 		ln, err := net.Listen(p.option.ListenerNetwork, p.Server.Addr)
 		if err != nil {
+			if p.option.DebugMode {
+				utils.PotetoPrint(
+					fmt.Sprintf(
+						"net.Listen reverted with %s",
+						err.Error(),
+					),
+				)
+			}
 			return err
 		}
 
@@ -240,6 +289,14 @@ func (p *poteto) Stop(ctx stdContext.Context) error {
 	p.startupMutex.Lock()
 
 	if err := p.Server.Shutdown(ctx); err != nil {
+		if p.option.DebugMode {
+			utils.PotetoPrint(
+				fmt.Sprintf(
+					"poteto.Server.Shutdown reverted with %s",
+					err.Error(),
+				),
+			)
+		}
 		p.startupMutex.Unlock()
 		return err
 	}
