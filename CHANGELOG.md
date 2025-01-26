@@ -1,6 +1,13 @@
 # 1.x.x
 
 ## 1.3.X
+
+### 1.3.1
+
+- DEBUG: add some debug mode log
+- FEAT: env for setting poteto option
+- Bump github.com/goccy/go-yaml from 1.15.13 to 1.15.15 in #211
+
 ### 1.3.0
 
 - DEP: Poteto's go version update -> 1.23 by @poteto0 in #207
