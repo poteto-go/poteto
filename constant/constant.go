@@ -1,6 +1,13 @@
 package constant
 
-const VERSION = "v1.2.1"
+const VERSION = "v1.3.1"
+
+// env
+const (
+	WITH_REQUEST_ID  string = "WITH_REQUEST_ID"
+	DEBUG_MODE       string = "DEBUG_MODE"
+	LISTENER_NETWORK string = "LISTENER_NETWORK"
+)
 
 const (
 	MAX_DOMAIN_LENGTH      int    = 255

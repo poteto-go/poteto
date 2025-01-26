@@ -39,6 +39,13 @@ detail on:
 
 https://github.com/poteto-go/poteto-cli
 
+## Poteto Option
+```env
+WITH_REQUEST_ID=true
+DEBUG_MODE=false
+LISTENER_NETWORK=tcp
+```
+
 ## Feature
 
 ### JSONRPCAdapter (`>=0.26.0`)

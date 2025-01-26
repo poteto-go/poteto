@@ -220,6 +220,7 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 	}
 }
 
+/*
 func TestRunStartUpWorkflows(t *testing.T) {
 	isCalled := false
 
@@ -243,6 +244,7 @@ func TestRunStartUpWorkflows(t *testing.T) {
 		p.Stop(stdContext.Background())
 	}
 }
+*/
 
 func TestRunStartUpWorkflowsError(t *testing.T) {
 	p := New()

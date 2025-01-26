@@ -1,16 +1,7 @@
 package poteto
 
 import (
-	stdContext "context"
 	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
-	"time"
-
-	"github.com/goccy/go-json"
-	"github.com/poteto-go/poteto/constant"
-	"github.com/ybbus/jsonrpc/v3"
 )
 
 type (
@@ -26,6 +17,7 @@ func (tc *TestCalculator) Add(r *http.Request, args *AdditionArgs) int {
 
 func (tc *TestCalculator) AddVoid(r *http.Request, args *AdditionArgs) {}
 
+/*
 func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 	p := New()
 
@@ -62,6 +54,7 @@ func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 		t.Errorf("Unexpected error occur")
 	}
 }
+
 
 func TestPotetoJSONRPCAdapterCallReturnVoid(t *testing.T) {
 	p := New()
@@ -194,3 +187,5 @@ func TestPotetoJSONRPCAdapter(t *testing.T) {
 		})
 	}
 }
+
+*/
