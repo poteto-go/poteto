@@ -2,6 +2,10 @@
 
 ## 1.3.X
 
+### 1.3.2
+
+- BUG: fix not load env by @poteto0 in #215
+
 ### 1.3.1
 
 - DEBUG: add some debug mode log by @poteto0 in #213

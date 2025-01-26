@@ -1,7 +1,16 @@
 package poteto
 
 import (
+	stdContext "context"
 	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/goccy/go-json"
+	"github.com/poteto-go/poteto/constant"
+	"github.com/ybbus/jsonrpc/v3"
 )
 
 type (
@@ -17,7 +26,6 @@ func (tc *TestCalculator) Add(r *http.Request, args *AdditionArgs) int {
 
 func (tc *TestCalculator) AddVoid(r *http.Request, args *AdditionArgs) {}
 
-/*
 func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 	p := New()
 
@@ -35,7 +43,6 @@ func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 	added := 10
 	add := 10
 	rpcClient := jsonrpc.NewClient("http://localhost:6000/add")
-	//result := &AdditionResult{}
 	result, err := rpcClient.Call(stdContext.Background(), "TestCalculator.Add", &AdditionArgs{Added: added, Add: add})
 	if err != nil {
 		t.Errorf("Unexpected error %v", err)
@@ -55,7 +62,6 @@ func TestPotetoJSONRPCAdapterCall(t *testing.T) {
 	}
 }
 
-
 func TestPotetoJSONRPCAdapterCallReturnVoid(t *testing.T) {
 	p := New()
 
@@ -73,7 +79,6 @@ func TestPotetoJSONRPCAdapterCallReturnVoid(t *testing.T) {
 	added := 10
 	add := 10
 	rpcClient := jsonrpc.NewClient("http://localhost:6001/add")
-	//result := &AdditionResult{}
 	result, err := rpcClient.Call(stdContext.Background(), "TestCalculator.AddVoid", &AdditionArgs{Added: added, Add: add})
 	if err != nil {
 		t.Errorf("Unexpected error %v", err)
@@ -187,5 +192,3 @@ func TestPotetoJSONRPCAdapter(t *testing.T) {
 		})
 	}
 }
-
-*/
