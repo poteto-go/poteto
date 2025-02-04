@@ -2,6 +2,11 @@
 
 ## 1.3.X
 
+### 1.3.3
+
+- Bump github.com/goccy/go-yaml from 1.15.15 to 1.15.17 in #216
+- Bump github.com/goccy/go-json from 0.10.4 to 0.10.5 in #217
+
 ### 1.3.2
 
 - BUG: fix not load env by @poteto0 in #215
@@ -16,17 +21,19 @@
 
 - DEP: Poteto's go version update -> 1.23 by @poteto0 in #207
 - FEAT: startUpWorkflows run function just before server start in #204
-NOTE:
+  NOTE:
+
 ```go
 func main() {
   p := New()
-  
+
   // run function just before server#Serve
   p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, func() error)
 }
 ```
 
 ## 1.2.X
+
 ### 1.2.1
 
 - [poteto-cli] SAME by @poteto0 in https://github.com/poteto-go/poteto-cli/pull/15
@@ -41,6 +48,7 @@ func main() {
 - OP: add linter by @poteto0 in #194
 
 ## 1.1.X
+
 ### 1.1.1
 
 - CHANGE: devcontainer.json to show git branch by @eaggle23 in #191
