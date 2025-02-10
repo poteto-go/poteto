@@ -262,7 +262,6 @@ func (p *poteto) setupServer() error {
 
 	// set listener
 	if p.Listener == nil {
-		utils.PotetoPrint(p.option.ListenerNetwork + "\n")
 		ln, err := net.Listen(p.option.ListenerNetwork, p.Server.Addr)
 		if err != nil {
 			if p.option.DebugMode {

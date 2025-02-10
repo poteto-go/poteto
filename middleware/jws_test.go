@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -216,7 +215,6 @@ func TestJWSMiddleware(t *testing.T) {
 
 			p.ServeHTTP(w, req)
 			if w.Code != it.expectedCode {
-				fmt.Println(w.Code)
 				t.Errorf("Unmatched")
 			}
 		})
