@@ -262,7 +262,6 @@ func (p *poteto) setupServer() error {
 
 	// set listener
 	if p.Listener == nil {
-		utils.PotetoPrint(p.option.ListenerNetwork + "\n")
 		ln, err := net.Listen(p.option.ListenerNetwork, p.Server.Addr)
 		if err != nil {
 			if p.option.DebugMode {
@@ -329,10 +328,10 @@ func (p *poteto) RegisterWorkflow(workflowType string, priority uint, workflow W
 // Leaf makes router group
 // You can make your router clear
 // with middlewares
-func (p *poteto) Leaf(basePath string, handler LeafHandler) {
+func (p *poteto) Leaf(basePath string, yield LeafHandler) {
 	leaf := NewLeaf(p, basePath)
 
-	handler(leaf)
+	yield(leaf)
 }
 
 func (p *poteto) GET(path string, handler HandlerFunc) error {

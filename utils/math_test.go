@@ -24,38 +24,3 @@ func TestIsSliceEqual(t *testing.T) {
 		})
 	}
 }
-
-func TestStrArrayToStr(t *testing.T) {
-	tests := []struct {
-		name     string
-		targets  []string
-		expected string
-	}{
-		{"Test 1 len array", []string{"hello"}, "hello"},
-		{"Test multi len array", []string{"hello", "world", "!!"}, "hello,world,!!"},
-	}
-
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			result := StrArrayToStr(it.targets)
-
-			if result != it.expected {
-				t.Errorf("Unmatched")
-			}
-		})
-	}
-}
-
-func BenchmarkStrArrayToStr(b *testing.B) {
-	input := []string{}
-	for i := 0; i < 100; i++ {
-		input = append(input, "hello")
-	}
-
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
-		output := StrArrayToStr(input)
-		_ = output
-	}
-}

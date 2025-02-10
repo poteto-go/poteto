@@ -220,32 +220,6 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 	}
 }
 
-/*
-func TestRunStartUpWorkflows(t *testing.T) {
-	isCalled := false
-
-	p := New()
-	workflowFunc := func() error {
-		isCalled = true
-		return nil
-	}
-
-	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, workflowFunc)
-
-	go func() {
-		p.Run("3031")
-	}()
-
-	select {
-	case <-time.After(500 * time.Millisecond):
-		if !isCalled {
-			t.Errorf("Unmatched")
-		}
-		p.Stop(stdContext.Background())
-	}
-}
-*/
-
 func TestRunStartUpWorkflowsError(t *testing.T) {
 	p := New()
 	calledFunc := func() error {

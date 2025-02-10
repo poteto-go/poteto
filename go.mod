@@ -1,6 +1,6 @@
 module github.com/poteto-go/poteto
 
-go 1.23
+go 1.23.5
 
 require (
 	bou.ke/monkey v1.0.2
@@ -14,6 +14,8 @@ require (
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/ybbus/jsonrpc/v3 v3.1.6
 )
+
+require github.com/poteto-go/tslice v0.2.1
 
 require (
 	github.com/mattn/go-colorable v0.1.13 // indirect

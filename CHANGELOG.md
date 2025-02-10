@@ -2,6 +2,13 @@
 
 ## 1.3.X
 
+### 1.3.4
+
+- DEP: add tslice by @poteto0 in #221
+- REF: fix typo & delete no-needed comment by @poteto0 in #221
+- Bump github.com/ybbus/jsonrpc/v3 from 3.1.5 to 3.1.6 in #220
+- Bump github.com/goccy/go-yaml from 1.15.17 to 1.15.19 in #219
+
 ### 1.3.3
 
 - Bump github.com/goccy/go-yaml from 1.15.15 to 1.15.17 in #216

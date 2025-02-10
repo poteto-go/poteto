@@ -34,7 +34,7 @@ func (*binder) Bind(ctx Context, object any) error {
 		}
 	}
 
-	// if not application/
+	// if not application/json
 	// return nil
 	return nil
 }
