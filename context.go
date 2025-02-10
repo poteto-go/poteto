@@ -11,6 +11,7 @@ import (
 	"github.com/harakeishi/gats"
 	"github.com/poteto-go/poteto/constant"
 	"github.com/poteto-go/poteto/utils"
+	"github.com/poteto-go/tslice"
 )
 
 type Context interface {
@@ -115,7 +116,7 @@ func (ctx *context) SetQueryParam(queryParams url.Values) {
 			continue
 		}
 
-		paramUnit := ParamUnit{key, utils.StrArrayToStr(value)}
+		paramUnit := ParamUnit{key, tslice.ToString(value)}
 
 		ctx.SetParam(constant.PARAM_TYPE_QUERY, paramUnit)
 	}
