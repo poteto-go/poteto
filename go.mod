@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/harakeishi/gats v0.0.0-20230219034858-055bc915842a
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
-	github.com/ybbus/jsonrpc/v3 v3.1.5
+	github.com/ybbus/jsonrpc/v3 v3.1.6
 )
 
 require (
