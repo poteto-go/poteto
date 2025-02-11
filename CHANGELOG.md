@@ -2,6 +2,11 @@
 
 ## 1.3.X
 
+### 1.3.5
+
+- DEP: `tslice` 0.2.1 -> 0.3.0 by @poteto0 in #222
+- REF: using tslice on sort by @poteto0 in #222
+
 ### 1.3.4
 
 - DEP: add tslice by @poteto0 in #221

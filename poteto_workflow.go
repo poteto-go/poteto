@@ -1,9 +1,8 @@
 package poteto
 
 import (
-	"sort"
-
 	"github.com/poteto-go/poteto/constant"
+	"github.com/poteto-go/tslice"
 )
 
 type UnitWorkflow struct {
@@ -53,8 +52,8 @@ func (pw *potetoWorkflows) ApplyStartUpWorkflows() error {
 }
 
 func sortWorkflows(workflows []UnitWorkflow) []UnitWorkflow {
-	sort.SliceStable(workflows, func(i, j int) bool {
-		return workflows[i].priority < workflows[j].priority
+	tslice.Sort(workflows, func(l, r UnitWorkflow) int {
+		return int(l.priority) - int(r.priority)
 	})
 	return workflows
 }
