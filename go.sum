@@ -23,8 +23,8 @@ github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWE
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/poteto-go/tslice v0.3.0 h1:vOzntu4VtlEwHc+rzNuo0qnO0dBa9kF4XJlQKvehGpc=
-github.com/poteto-go/tslice v0.3.0/go.mod h1:tjvnuwUBOzukU3b8sE9acz8Gnc1W/gl/EU2RXdDCpG8=
+github.com/poteto-go/tslice v0.4.0 h1:AihA32BmSW4a/FpnzO8yjUbclr0XxGyuBc2rpHvxb8A=
+github.com/poteto-go/tslice v0.4.0/go.mod h1:tjvnuwUBOzukU3b8sE9acz8Gnc1W/gl/EU2RXdDCpG8=
 github.com/quasilyte/go-ruleguard/dsl v0.3.22 h1:wd8zkOhSNr+I+8Qeciml08ivDt1pSXe60+5DqOpCjPE=
 github.com/quasilyte/go-ruleguard/dsl v0.3.22/go.mod h1:KeCP03KrjuSO0H1kTuZQCWlQPulDV6YMIXmpQss17rU=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
