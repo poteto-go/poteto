@@ -6,6 +6,7 @@ import (
 
 	"github.com/poteto-go/poteto"
 	"github.com/poteto-go/poteto/constant"
+	"github.com/poteto-go/tslice"
 )
 
 type CORSConfig struct {
@@ -63,7 +64,7 @@ func CORSWithConfig(config CORSConfig) poteto.MiddlewareFunc {
 			}
 
 			// allowed method
-			if matchMethod(req.Method, config.AllowMethods) {
+			if tslice.IndexOf(config.AllowMethods, req.Method) >= 0 {
 				res.SetHeader(constant.HEADER_ACCESS_CONTROL_ORIGIN, allowOrigin)
 				return next(ctx)
 			}
