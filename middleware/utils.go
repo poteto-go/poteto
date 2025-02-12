@@ -68,13 +68,3 @@ func matchScheme(domain, pattern string) bool {
 	pidx := strings.Index(pattern, ":")
 	return didx != -1 && pidx != -1 && domain[:didx] == pattern[:pidx]
 }
-
-func matchMethod(method string, allowMethods []string) bool {
-	for _, m := range allowMethods {
-		if m == method {
-			return true
-		}
-	}
-
-	return false
-}
