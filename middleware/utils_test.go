@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-
-	"github.com/poteto-go/poteto/utils"
 )
 
 func TestWrapRegExp(t *testing.T) {
@@ -77,16 +75,6 @@ func TestMatchScheme(t *testing.T) {
 				t.Errorf(fmt.Sprintf("actual: %t", result))
 			}
 		})
-	}
-}
-
-func TestReverseStringArray(t *testing.T) {
-	targets := []string{"!!", "world", "hello"}
-	expected := []string{"hello", "world", "!!"}
-
-	result := reverseStringArray(targets)
-	if !utils.IsSliceEqual(result, expected) {
-		t.Errorf("Not matched")
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/poteto-go/poteto/constant"
+	"github.com/poteto-go/tslice"
 )
 
 // EX: https://example.com:* => ^https://example\.com:.*$
@@ -39,11 +40,10 @@ func matchSubdomain(domain, pattern string) bool {
 	patAuth := pattern[pidx+3:]
 
 	// Opposite by .
-	domComp := strings.Split(domAuth, ".")
-	domComp = reverseStringArray(domComp)
+	domComp := tslice.ToReversed(strings.Split(domAuth, "."))
+
 	// do pattern
-	patComp := strings.Split(patAuth, ".")
-	patComp = reverseStringArray(patComp)
+	patComp := tslice.ToReversed(strings.Split(patAuth, "."))
 
 	for i, dom := range domComp {
 		if len(patComp) <= i {
@@ -67,16 +67,6 @@ func matchScheme(domain, pattern string) bool {
 	didx := strings.Index(domain, ":")
 	pidx := strings.Index(pattern, ":")
 	return didx != -1 && pidx != -1 && domain[:didx] == pattern[:pidx]
-}
-
-func reverseStringArray(targets []string) []string {
-	n := len(targets)
-	for i := n/2 - 1; i >= 0; i-- {
-		oppidx := n - i - 1
-		targets[i], targets[oppidx] = targets[oppidx], targets[i]
-	}
-
-	return targets
 }
 
 func matchMethod(method string, allowMethods []string) bool {
