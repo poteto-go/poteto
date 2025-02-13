@@ -14,6 +14,7 @@ type Response interface {
 	Header() http.Header
 	SetHeader(key, value string)
 	AddHeader(key, value string)
+	Unwrap() http.ResponseWriter
 }
 
 type response struct {
@@ -71,4 +72,13 @@ func (r *response) SetStatus(code int) {
 
 func (r *response) Header() http.Header {
 	return r.Writer.Header()
+}
+
+// fullfil interface for responseController
+// you can assign to responseController
+// res := NewResponse(w)
+// rc := http.NewResponseController(res)
+// https://go.dev/src/net/http/responsecontroller.go
+func (r *response) Unwrap() http.ResponseWriter {
+	return r.Writer
 }

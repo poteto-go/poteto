@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"sync"
 
@@ -42,6 +43,20 @@ type Poteto interface {
 	OPTIONS(path string, handler HandlerFunc) error
 	TRACE(path string, handler HandlerFunc) error
 	CONNECT(path string, handler HandlerFunc) error
+
+	// poteto.Play make ut w/o server
+	// EX:
+	//  p := poteto.New()
+	//  p.GET("/users", func(ctx poteto.Context) error {
+	//    return ctx.JSON(http.StatusOK, map[string]string{
+	//      "id":   "1",
+	//      "name": "tester",
+	//    })
+	//  })
+	//  res := p.Play(http.MethodGet, "/users")
+	//  resBodyStr := res.Body.String
+	//  // => {"id":"1","name":"tester"}
+	Play(method, path string, body ...string) *httptest.ResponseRecorder
 }
 
 type poteto struct {
@@ -368,4 +383,27 @@ func (p *poteto) TRACE(path string, handler HandlerFunc) error {
 
 func (p *poteto) CONNECT(path string, handler HandlerFunc) error {
 	return p.router.CONNECT(path, handler)
+}
+
+func (p *poteto) Play(method, path string, body ...string) *httptest.ResponseRecorder {
+	if len(body) > 2 {
+		panic("should be len(body) = 0 | 1")
+	}
+
+	resp, req := func() (*httptest.ResponseRecorder, *http.Request) {
+		switch len(body) {
+		case 1:
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(method, path, strings.NewReader(body[0]))
+			return w, req
+		default:
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(method, path, nil)
+			return w, req
+		}
+	}()
+
+	p.ServeHTTP(resp, req)
+
+	return resp
 }

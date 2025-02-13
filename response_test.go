@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestWriteHeader(t *testing.T) {
@@ -92,4 +93,25 @@ func TestSetHeader(t *testing.T) {
 	if len(header["Key"]) != 1 {
 		t.Error("Unmatched")
 	}
+}
+
+func TestUnwrapResponse(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	res := NewResponse(w)
+
+	var wi http.ResponseWriter = nil
+	wi = res.Unwrap()
+	if wi == nil {
+		t.Error("cannot unwrap response")
+	}
+}
+
+func TestResponseController(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	res := NewResponse(w)
+	rc := http.NewResponseController(res)
+	rc.SetWriteDeadline(time.Now().Add(5 * time.Second))
+	res.Write([]byte("done"))
 }
