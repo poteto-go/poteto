@@ -7,13 +7,48 @@ import (
 )
 
 type Response interface {
+	/*
+		Write statusCode to http.ResponseWriter
+	*/
 	WriteHeader(code int)
+
+	/*
+		Write to http.ResponseWriter
+	*/
 	Write(b []byte) (int, error)
 
+	/*
+		Set status code
+	*/
 	SetStatus(code int)
+
+	/*
+		return http.ResponseWriter.Header()
+	*/
 	Header() http.Header
+
+	/*
+		Set Header if key doesn't include
+	*/
 	SetHeader(key, value string)
+
+	/*
+		Internal call http.ResponseWriter.Header().Add
+	*/
 	AddHeader(key, value string)
+
+	/*
+		fullfil interface for (making) responseController
+
+		you can assign to responseController
+
+		func hoge() {
+			res := NewResponse(w)
+			rc := http.NewResponseController(res)
+		}
+
+		https://go.dev/src/net/http/responsecontroller.go
+	*/
 	Unwrap() http.ResponseWriter
 }
 
@@ -74,11 +109,6 @@ func (r *response) Header() http.Header {
 	return r.Writer.Header()
 }
 
-// fullfil interface for responseController
-// you can assign to responseController
-// res := NewResponse(w)
-// rc := http.NewResponseController(res)
-// https://go.dev/src/net/http/responsecontroller.go
 func (r *response) Unwrap() http.ResponseWriter {
 	return r.Writer
 }
