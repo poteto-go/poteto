@@ -2,6 +2,12 @@
 
 ## 1.3.X
 
+### 1.3.6
+
+- DEP: uodate tslice `v0.3.0` -> `v0.4.0` by @poteto0 in #223
+- REF: rewrote weak functions in tslice for the application by @poteto0 in #223
+- REF: rewrote sort that had become confusing by @poteto0 in #223
+
 ### 1.3.5
 
 - DEP: `tslice` 0.2.1 -> 0.3.0 by @poteto0 in #222
