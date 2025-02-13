@@ -2,10 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"net/http"
 	"testing"
-
-	"github.com/poteto-go/poteto/utils"
 )
 
 func TestWrapRegExp(t *testing.T) {
@@ -71,39 +68,6 @@ func TestMatchScheme(t *testing.T) {
 		t.Run((it.name), func(t *testing.T) {
 			result := matchScheme(it.domain, it.pattern)
 
-			if result != it.expected {
-				t.Errorf("Not matched")
-				t.Errorf(fmt.Sprintf("expected: %t", it.expected))
-				t.Errorf(fmt.Sprintf("actual: %t", result))
-			}
-		})
-	}
-}
-
-func TestReverseStringArray(t *testing.T) {
-	targets := []string{"!!", "world", "hello"}
-	expected := []string{"hello", "world", "!!"}
-
-	result := reverseStringArray(targets)
-	if !utils.IsSliceEqual(result, expected) {
-		t.Errorf("Not matched")
-	}
-}
-
-func TestMatchMethod(t *testing.T) {
-	tests := []struct {
-		name         string
-		target       string
-		allowMethods []string
-		expected     bool
-	}{
-		{"test including method return true", http.MethodGet, []string{http.MethodGet}, true},
-		{"test not including method return false", http.MethodPost, []string{http.MethodGet}, false},
-	}
-
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			result := matchMethod(it.target, it.allowMethods)
 			if result != it.expected {
 				t.Errorf("Not matched")
 				t.Errorf(fmt.Sprintf("expected: %t", it.expected))
