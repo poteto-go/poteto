@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestWriteHeader(t *testing.T) {
@@ -104,4 +105,13 @@ func TestUnwrapResponse(t *testing.T) {
 	if wi == nil {
 		t.Error("cannot unwrap response")
 	}
+}
+
+func TestResponseController(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	res := NewResponse(w)
+	rc := http.NewResponseController(res)
+	rc.SetWriteDeadline(time.Now().Add(5 * time.Second))
+	res.Write([]byte("done"))
 }

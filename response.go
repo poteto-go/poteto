@@ -74,6 +74,11 @@ func (r *response) Header() http.Header {
 	return r.Writer.Header()
 }
 
+// fullfil interface for responseController
+// you can assign to responseController
+// res := NewResponse(w)
+// rc := http.NewResponseController(res)
+// https://go.dev/src/net/http/responsecontroller.go
 func (r *response) Unwrap() http.ResponseWriter {
 	return r.Writer
 }
