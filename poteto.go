@@ -44,7 +44,17 @@ type Poteto interface {
 	TRACE(path string, handler HandlerFunc) error
 	CONNECT(path string, handler HandlerFunc) error
 
-	// For UT
+	// poteto.Play make ut w/o server
+	// EX:
+	//  p := poteto.New()
+	//  p.GET("/users", func(ctx poteto.Context) error {
+	//    return ctx.JSON(http.StatusOK, map[string]string{
+	//      "id":   "1",
+	//      "name": "tester",
+	//    })
+	//  })
+	//  res := p.Play(http.MethodGet, "/users")
+	//  resBodyStr := res.Body.String => {"id":"1","name":"tester"}
 	Play(method, path string, body ...string) *httptest.ResponseRecorder
 }
 
