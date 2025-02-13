@@ -1,5 +1,30 @@
 # 1.x.x
 
+## 1.4.X
+
+### 1.4.0
+
+- FEAT: `response` fullfill interface for `ReponseController` by @poteto0 in #226
+- FEAT: `poteto.Play` for ut w/o server by @poteto0 in #226
+
+KEYNOTE:
+```go
+func main() {
+	p := poteto.New()
+
+	p.GET("/users", func(ctx poteto.Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"id":   "1",
+			"name": "tester",
+		})
+	})
+
+	res := p.Play(http.MethodGet, "/users")
+	resBodyStr := res.Body.String
+	// => {"id":"1","name":"tester"}
+}
+```
+
 ## 1.3.X
 
 ### 1.3.6
