@@ -93,3 +93,15 @@ func TestSetHeader(t *testing.T) {
 		t.Error("Unmatched")
 	}
 }
+
+func TestUnwrapResponse(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	res := NewResponse(w)
+
+	var wi http.ResponseWriter = nil
+	wi = res.Unwrap()
+	if wi == nil {
+		t.Error("cannot unwrap response")
+	}
+}
