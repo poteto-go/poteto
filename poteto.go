@@ -54,7 +54,8 @@ type Poteto interface {
 	//    })
 	//  })
 	//  res := p.Play(http.MethodGet, "/users")
-	//  resBodyStr := res.Body.String => {"id":"1","name":"tester"}
+	//  resBodyStr := res.Body.String
+	//  // => {"id":"1","name":"tester"}
 	Play(method, path string, body ...string) *httptest.ResponseRecorder
 }
 
