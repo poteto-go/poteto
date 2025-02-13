@@ -48,6 +48,53 @@ LISTENER_NETWORK=tcp
 
 ## Feature
 
+### Test Without Server (`>=1.4.0`)
+
+> [!NOTE]
+> Poteto developers can easily test without setting up a server.
+
+```go
+func main() {
+	p := poteto.New()
+
+	p.GET("/users", func(ctx poteto.Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"id":   "1",
+			"name": "tester",
+		})
+	})
+
+	res := p.Play(http.MethodGet, "/users")
+	resBodyStr := res.Body.String
+	// => {"id":"1","name":"tester"}
+}
+```
+
+### Leaf router & middlewareTree (`>=0.21.0`)
+
+```go
+func main() {
+	p := poteto.New()
+
+	// Leaf >= 0.21.0
+	p.Leaf("/users", func(userApi poteto.Leaf) {
+		userApi.Register(middleware.CamaraWithConfig(middleware.DefaultCamaraConfig))
+		userApi.GET("/", controller.UserHandler)
+		userApi.GET("/:name", controller.UserIdHandler)
+	})
+
+	p.Run("127.0.0.1:8000")
+}
+```
+
+### Get RequestId Easily
+
+```go
+func handler(ctx poteto.Context) error {
+	requestId := ctx.RequestId()
+}
+```
+
 ### JSONRPCAdapter (`>=0.26.0`)
 
 KeyNote: You can serve JSONRPC server easily.
@@ -74,31 +121,6 @@ func main() {
   })
 
   p.Run("8080")
-}
-```
-
-### Leaf router & middlewareTree (`>=0.21.0`)
-
-```go
-func main() {
-	p := poteto.New()
-
-	// Leaf >= 0.21.0
-	p.Leaf("/users", func(userApi poteto.Leaf) {
-		userApi.Register(middleware.CamaraWithConfig(middleware.DefaultCamaraConfig))
-		userApi.GET("/", controller.UserHandler)
-		userApi.GET("/:name", controller.UserIdHandler)
-	})
-
-	p.Run("127.0.0.1:8000")
-}
-```
-
-### Get RequestId Easily
-
-```go
-func handler(ctx poteto.Context) error {
-	requestId := ctx.RequestId()
 }
 ```
 
