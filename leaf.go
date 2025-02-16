@@ -17,15 +17,34 @@ type leaf struct {
 }
 
 type Leaf interface {
+	// internal call Poteto.Combine w/ base path
 	Register(middlewares ...MiddlewareFunc) *middlewareTree
+
+	// internal call Poteto.GET w/ base path
 	GET(addPath string, handler HandlerFunc) error
+
+	// internal call Poteto.POST w/ base path
 	POST(addPath string, handler HandlerFunc) error
+
+	// internal call Poteto.PUT w/ base path
 	PUT(addPath string, handler HandlerFunc) error
+
+	// internal call Poteto.PATCH w/ base path
 	PATCH(path string, handler HandlerFunc) error
+
+	// internal call Poteto.DELETE w/ base path
 	DELETE(addPath string, handler HandlerFunc) error
+
+	// internal call Poteto.HEAD w/ base path
 	HEAD(path string, handler HandlerFunc) error
+
+	// internal call Poteto.OPTIONS w/ base path
 	OPTIONS(path string, handler HandlerFunc) error
+
+	// internal call Poteto.TRACE w/ base path
 	TRACE(path string, handler HandlerFunc) error
+
+	// internal call Poteto.CONNECT w/ base path
 	CONNECT(path string, handler HandlerFunc) error
 }
 
@@ -36,60 +55,50 @@ func NewLeaf(poteto Poteto, basePath string) Leaf {
 	}
 }
 
-// internal call Poteto.Combine w/ bp
 func (l *leaf) Register(middlewares ...MiddlewareFunc) *middlewareTree {
 	return l.poteto.Combine(l.basePath, middlewares...)
 }
 
-// internal call Poteto.GET w/ bp
 func (l *leaf) GET(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.GET(path, handler)
 }
 
-// internal call Poteto.POST w/ bp
 func (l *leaf) POST(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.POST(path, handler)
 }
 
-// internal call Poteto.PUT w/ bp
 func (l *leaf) PUT(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.PUT(path, handler)
 }
 
-// internal call Poteto.PATCH w/ bp
 func (l *leaf) PATCH(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.PATCH(path, handler)
 }
 
-// internal call Poteto.DELETE w/ bp
 func (l *leaf) DELETE(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.DELETE(path, handler)
 }
 
-// internal call Poteto.HEAD w/ bp
 func (l *leaf) HEAD(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.HEAD(path, handler)
 }
 
-// internal call Poteto.OPTIONS w/ bp
 func (l *leaf) OPTIONS(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.OPTIONS(path, handler)
 }
 
-// internal call Poteto.TRACE w/ bp
 func (l *leaf) TRACE(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.TRACE(path, handler)
 }
 
-// internal call Poteto.CONNECT w/ bp
 func (l *leaf) CONNECT(addPath string, handler HandlerFunc) error {
 	path := l.basePath + addPath
 	return l.poteto.CONNECT(path, handler)
