@@ -15,41 +15,135 @@ import (
 )
 
 type Context interface {
+	// return status code & json response
+	//
+	// set Content-Type: application/json
 	JSON(code int, value any) error
+
 	JSONRPCError(code int, message string, data string, id int) error
+
+	// decode body -> interface
+	//
+	// You need "Content-Type: application/json" in request Header
+	//
+	// func handler(ctx poteto.Context) error {
+	//   user := User{}
+	//   ctx.Bind(&user)
+	// }
 	Bind(object any) error
+
 	WriteHeader(code int)
+
 	JsonSerialize(value any) error
+
 	JsonDeserialize(object any) error
 
 	SetQueryParam(queryParams url.Values)
+
 	SetParam(paramType string, paramUnit ParamUnit)
+
+	// Get path parameter
+	// func handler(ctx poteto.Context) error {
+	//   id, ok := ctx.PathParam("id")
+	// }
 	PathParam(key string) (string, bool)
+
+	// Get path parameter
+	// func handler(ctx poteto.Context) error {
+	//   id, ok := ctx.QueryParam("id")
+	// }
 	QueryParam(key string) (string, bool)
+
+	// DebugParam return all http parameters
+	//
+	// use for debug or log
+	//
+	// EX: {"path":{"player_id":"2"},"query":{"user_id":"1"}}
 	DebugParam() (string, bool)
+
 	SetPath(path string)
 	GetPath() string
+
+	// set (map[string]any) -> context
+	// you can get from ctx.Get
+	//
+	// in your middleware
+	// func middleware(next poteto.HandlerFunc) poteto.HandlerFunc {
+	//   return func(ctx poteto.Context) error {
+	//     ctx.Set("foo", "bar")
+	//   }
+	// }
+	//
+	// in your handler
+	// func handler(ctx poteto.Context) error {
+	//   val, ok := ctx.Get("foo")
+	// }
 	Set(key string, val any)
+
+	// get (any, ok) <- context
+	// you can set value by ctx.Set
+	//
+	// in your middleware
+	// func middleware(next poteto.HandlerFunc) poteto.HandlerFunc {
+	//   return func(ctx poteto.Context) error {
+	//     ctx.Set("foo", "bar")
+	//   }
+	// }
+	//
+	// in your handler
+	// func handler(ctx poteto.Context) error {
+	//   val, ok := ctx.Get("foo")
+	// }
 	Get(key string) (any, bool)
 
 	GetResponse() *response
 	SetResponseHeader(key, value string)
+
+	// get raw request
 	GetRequest() *http.Request
+
+	// get request one header param
 	GetRequestHeaderParam(key string) string
+
+	// get request any header params
 	ExtractRequestHeaderParam(key string) []string
 
+	// return 204 & nil
 	NoContent() error
 
 	// set request id to store
 	// and return value
 	RequestId() string
 
+	// get remoteAddr
 	GetRemoteIP() (string, error)
+
 	RegisterTrustIPRange(ranges *net.IPNet)
 	GetIPFromXFFHeader() (string, error)
+
+	// get requested ip
+	//   1. Get from XFF
+	//   1. Get from RealIP
+	//   1. Get from GetRemoteIp
 	RealIP() (string, error)
+
+	// reset context
 	Reset(w http.ResponseWriter, r *http.Request)
+
+	// set logger
+	//
+	// you can get logger in your handler
+	// func main() {
+	//   p := poteto.New()
+	//   p.SetLogger(<your logger>)
+	// }
+	// in your handler
+	// func handler (ctx poteto.Context) error {
+	//   logger := ctx.Logger()
+	// }
 	SetLogger(logger any)
+
+	// get logger
 	Logger() any
 }
 
@@ -139,8 +233,6 @@ func (ctx *context) Bind(object any) error {
 	return ctx.binder.Bind(ctx, object)
 }
 
-// DebugParam return all http parameters
-// use for debug or log
 func (ctx *context) DebugParam() (string, bool) {
 	val, err := ctx.httpParams.JsonSerialize()
 	if err != nil {
