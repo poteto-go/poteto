@@ -2,6 +2,13 @@
 
 ## 1.4.X
 
+### 1.4.1
+
+- DOC: godoc on context by @poteto0 in #231
+- DOC: godoc on leaf by @poteto0 in #231
+- DOC: godoc on router by @poteto0 in #230
+- DOC: godoc on response by @poteto0 in #230
+
 ### 1.4.0
 
 - FEAT: `response` fullfill interface for `ReponseController` by @poteto0 in #226
