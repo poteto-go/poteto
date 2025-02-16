@@ -8,14 +8,77 @@ import (
 
 type Router interface {
 	add(method, path string, handler HandlerFunc) error
+
+	/*
+		Register GET method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	GET(path string, handler HandlerFunc) error
+
+	/*
+		Register POST method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	POST(path string, handler HandlerFunc) error
+
+	/*
+		Register PUT method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	PUT(path string, handler HandlerFunc) error
+
+	/*
+		Register PATCH method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	PATCH(path string, handler HandlerFunc) error
+
+	/*
+		Register DELETE method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	DELETE(path string, handler HandlerFunc) error
+
+	/*
+		Register HEAD method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	HEAD(path string, handler HandlerFunc) error
+
+	/*
+		Register OPTIONS method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	OPTIONS(path string, handler HandlerFunc) error
+
+	/*
+		Register TRACE method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	TRACE(path string, handler HandlerFunc) error
+
+	/*
+		Register CONNECT method Route
+
+		Trim Suffix "/"
+		EX: "/users/" -> "/users"
+	*/
 	CONNECT(path string, handler HandlerFunc) error
 
 	GetRoutesByMethod(method string) *route
@@ -34,6 +97,15 @@ type router struct {
 	routesCONNECT Route
 }
 
+/*
+Router Provides Radix-Tree Routing
+
+O(logN) ~ N
+
+Supports standard(net/http) methods GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT
+
+You can use only Router of course.
+*/
 func NewRouter() Router {
 	return &router{
 		routesGET:     NewRoute(),
