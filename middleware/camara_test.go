@@ -47,27 +47,27 @@ func TestCamaraWithConfigByDefault(t *testing.T) {
 			camara_handler(context)
 			header := w.Result().Header
 
-			if header[constant.CONTENT_SECURITY_POLICY][0] != DefaultCamaraConfig.ContentSecurityPolicy {
+			if header[constant.ContentSecurityPolicy][0] != DefaultCamaraConfig.ContentSecurityPolicy {
 				t.Errorf("Cannot set CSP")
 			}
 
-			if header[constant.X_FRAME_OPTION][0] != DefaultCamaraConfig.XFrameOption {
+			if header[constant.XFrameOption][0] != DefaultCamaraConfig.XFrameOption {
 				t.Errorf("Cannot set XFO")
 			}
 
-			if header[constant.STRICT_TRANSPORT_SECURITY][0] != DefaultCamaraConfig.StrictTransportSecurity {
+			if header[constant.StrictTransportSecurity][0] != DefaultCamaraConfig.StrictTransportSecurity {
 				t.Errorf("Cannot set STS")
 			}
 
-			if header[constant.X_DOWNLOAD_OPTION][0] != DefaultCamaraConfig.XDownloadOption {
+			if header[constant.XDownloadOption][0] != DefaultCamaraConfig.XDownloadOption {
 				t.Errorf("Cannot set XDO")
 			}
 
-			if header[constant.X_CONTENT_TYPE_OPTION][0] != DefaultCamaraConfig.XContentTypeOption {
+			if header[constant.XContentTypeOption][0] != DefaultCamaraConfig.XContentTypeOption {
 				t.Errorf("Cannot set XCT")
 			}
 
-			if header[constant.REFERRER_POLICY][0] != DefaultCamaraConfig.ReferrerPolicy {
+			if header[constant.ReferrerPolicy][0] != DefaultCamaraConfig.ReferrerPolicy {
 				t.Errorf("Cannot set RP")
 			}
 		})

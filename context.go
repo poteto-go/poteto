@@ -173,7 +173,7 @@ func NewContext(w http.ResponseWriter, r *http.Request) Context {
 }
 
 func (ctx *context) JSON(code int, value any) error {
-	ctx.SetResponseHeader(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+	ctx.SetResponseHeader(constant.HeaderContentType, constant.ApplicationJson)
 	ctx.response.SetStatus(code)
 	return ctx.JsonSerialize(value)
 }
@@ -200,7 +200,7 @@ func (ctx *context) SetPath(path string) {
 }
 
 func (ctx *context) SetQueryParam(queryParams url.Values) {
-	if len(queryParams) > constant.MAX_QUERY_PARAM_LENGTH {
+	if len(queryParams) > constant.MaxQueryParamCount {
 		utils.PotetoPrint("too many query params should be < 32\n")
 		return
 	}
@@ -212,7 +212,7 @@ func (ctx *context) SetQueryParam(queryParams url.Values) {
 
 		paramUnit := ParamUnit{key, tslice.ToString(value)}
 
-		ctx.SetParam(constant.PARAM_TYPE_QUERY, paramUnit)
+		ctx.SetParam(constant.ParamTypeQuery, paramUnit)
 	}
 }
 
@@ -221,12 +221,12 @@ func (ctx *context) SetParam(paramType string, paramUnit ParamUnit) {
 }
 
 func (ctx *context) PathParam(key string) (string, bool) {
-	key = constant.PARAM_PREFIX + key
-	return ctx.httpParams.GetParam(constant.PARAM_TYPE_PATH, key)
+	key = constant.ParamPrefix + key
+	return ctx.httpParams.GetParam(constant.ParamTypePath, key)
 }
 
 func (ctx *context) QueryParam(key string) (string, bool) {
-	return ctx.httpParams.GetParam(constant.PARAM_TYPE_QUERY, key)
+	return ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
 }
 
 func (ctx *context) Bind(object any) error {
@@ -303,13 +303,13 @@ func (ctx *context) Get(key string) (any, bool) {
 
 func (ctx *context) RequestId() string {
 	// get from store
-	val, ok := ctx.Get(constant.STORE_REQUEST_ID)
+	val, ok := ctx.Get(constant.StoredRequestId)
 	if id, err := gats.ToString(val); ok && err == nil {
 		return id
 	}
 
 	// get from header
-	if id := ctx.GetRequestHeaderParam(constant.HEADER_X_REQUEST_ID); id != "" {
+	if id := ctx.GetRequestHeaderParam(constant.HeaderRequestId); id != "" {
 		return id
 	}
 

@@ -42,7 +42,7 @@ func TestBind(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 			ctx := NewContext(w, req).(*context)
 
 			err := binder.Bind(ctx, &user)
@@ -87,7 +87,7 @@ func BenchmarkBind(b *testing.B) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(userJSON)))
-	req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+	req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 	ctx := NewContext(w, req).(*context)
 
 	testUser := user{}

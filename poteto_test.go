@@ -148,7 +148,7 @@ func TestRunTLSStartUpWorkflows(t *testing.T) {
 		return nil
 	}
 
-	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, calledFunc)
+	p.RegisterWorkflow(constant.StartUpWorkflow, 1, calledFunc)
 
 	errChan := make(chan error)
 	go func() {
@@ -226,7 +226,7 @@ func TestRunStartUpWorkflowsError(t *testing.T) {
 		return errors.New("error")
 	}
 
-	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, calledFunc)
+	p.RegisterWorkflow(constant.StartUpWorkflow, 1, calledFunc)
 
 	errChan := make(chan error)
 	go func() {

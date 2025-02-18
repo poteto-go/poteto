@@ -23,12 +23,12 @@ func (*binder) Bind(ctx Context, object any) error {
 	}
 
 	base, _, _ := strings.Cut(
-		ctx.GetRequestHeaderParam(constant.HEADER_CONTENT_TYPE), ";",
+		ctx.GetRequestHeaderParam(constant.HeaderContentType), ";",
 	)
 	mediaType := strings.TrimSpace(base)
 
 	switch mediaType {
-	case constant.APPLICATION_JSON:
+	case constant.ApplicationJson:
 		if err := ctx.JsonDeserialize(object); err != nil {
 			return err
 		}

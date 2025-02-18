@@ -44,7 +44,7 @@ func TestGetIPFromXFFHeader(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
-	req.Header.Set(constant.HEADER_X_FORWARDED_FOR, "11.0.0.1, 12.0.0.1, 10.0.0.2, 10.0.0.1")
+	req.Header.Set(constant.HeaderXForwardedFor, "11.0.0.1, 12.0.0.1, 10.0.0.2, 10.0.0.1")
 	ctx := NewContext(w, req).(*context)
 
 	ipString, _ := iph.GetIPFromXFFHeader(ctx)
@@ -66,19 +66,19 @@ func TestGetRealIP(t *testing.T) {
 	}{
 		{
 			"Get from Real Ip",
-			constant.HEADER_X_REAL_IP,
+			constant.HeaderXRealIp,
 			"11.0.0.1",
 			"11.0.0.1",
 		},
 		{
 			"Get from XFF",
-			constant.HEADER_X_FORWARDED_FOR,
+			constant.HeaderXForwardedFor,
 			"11.0.0.1",
 			"11.0.0.1",
 		},
 		{
 			"All trusted case",
-			constant.HEADER_X_FORWARDED_FOR,
+			constant.HeaderXForwardedFor,
 			"13.0.0.1",
 			"13.0.0.1",
 		},

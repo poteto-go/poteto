@@ -54,40 +54,40 @@ func CamaraWithConfig(config CamaraConfig) poteto.MiddlewareFunc {
 			// * XXS
 			// CSP Header
 			ctx.SetResponseHeader(
-				constant.CONTENT_SECURITY_POLICY,
+				constant.ContentSecurityPolicy,
 				config.ContentSecurityPolicy,
 			)
 
 			// * Fishing
 			// Cannot open in Server
 			ctx.SetResponseHeader(
-				constant.X_DOWNLOAD_OPTION,
+				constant.XDownloadOption,
 				config.XDownloadOption,
 			)
 
 			// * Click Jacking
 			// X-Frame-Option: Cannot use in iframe except Same Origin
 			ctx.SetResponseHeader(
-				constant.X_FRAME_OPTION,
+				constant.XFrameOption,
 				config.XFrameOption,
 			)
 
 			// * Sec Transport
 			// Strict-Transport-Security: Required https?
 			ctx.SetResponseHeader(
-				constant.STRICT_TRANSPORT_SECURITY,
+				constant.StrictTransportSecurity,
 				config.StrictTransportSecurity,
 			)
 
 			// * MIME Sniffing
 			ctx.SetResponseHeader(
-				constant.X_CONTENT_TYPE_OPTION,
+				constant.XContentTypeOption,
 				config.XContentTypeOption,
 			)
 
 			// * Session HighJack
 			ctx.SetResponseHeader(
-				constant.REFERRER_POLICY,
+				constant.ReferrerPolicy,
 				config.ReferrerPolicy,
 			)
 
