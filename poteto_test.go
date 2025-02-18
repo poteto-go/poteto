@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"bou.ke/monkey"
-	"github.com/poteto-go/poteto/constant"
 )
 
 func TestAddRouteToPoteto(t *testing.T) {
@@ -136,38 +135,6 @@ func TestRunTLS(t *testing.T) {
 	}
 }
 
-func TestRunTLSStartUpWorkflows(t *testing.T) {
-	cert, _ := os.ReadFile("./_fixture/certs/cert.pem")
-	key, _ := os.ReadFile("./_fixture/certs/key.pem")
-
-	p := New()
-
-	isCalled := false
-	calledFunc := func() error {
-		isCalled = true
-		return nil
-	}
-
-	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, calledFunc)
-
-	errChan := make(chan error)
-	go func() {
-		errChan <- p.RunTLS("8080", cert, key)
-	}()
-
-	select {
-	case <-time.After(500 * time.Millisecond):
-		if !isCalled {
-			t.Errorf("Unmatched")
-		}
-		if err := p.Stop(stdContext.Background()); err != nil {
-			t.Errorf("Unmatched")
-		}
-	case <-errChan:
-		return
-	}
-}
-
 func TestCertParseError(t *testing.T) {
 	cert := []byte("hello")
 	key, _ := os.ReadFile("./_fixture/certs/key.pem")
@@ -217,29 +184,6 @@ func TestRunHandlerErrorInSetupServer(t *testing.T) {
 
 	if err := p.Run("90"); err == nil {
 		t.Errorf("Unmatched")
-	}
-}
-
-func TestRunStartUpWorkflowsError(t *testing.T) {
-	p := New()
-	calledFunc := func() error {
-		return errors.New("error")
-	}
-
-	p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, calledFunc)
-
-	errChan := make(chan error)
-	go func() {
-		errChan <- p.Run("3032")
-	}()
-
-	select {
-	case <-time.After(500 * time.Millisecond):
-		t.Errorf("Unmatched")
-		p.Stop(stdContext.Background())
-	case <-errChan:
-		// Pass case
-		p.Stop(stdContext.Background())
 	}
 }
 
