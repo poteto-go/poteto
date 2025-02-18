@@ -2,7 +2,7 @@
 echo "start test"
 # noinlineによるテスト実行
 # https://github.com/poteto-go/poteto/issues/169
-go test ./... -cover  -memprofile mem.prof -bench . -benchtime 100000x -gcflags=all=-l
+go test ./... -cover -coverprofile cover.out.tmp -bench . -benchtime 100000x -gcflags=all=-l
 
 echo "remove"
 cat cover.out.tmp | grep -v "github.com/poteto-go/poteto/cmd/template" > cover2.out.tmp
