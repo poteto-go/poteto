@@ -32,6 +32,21 @@ type Context interface {
 	// }
 	Bind(object any) error
 
+	// Bind with github.com/go-playground/validator/v10
+	//
+	// type User struct {
+	//   Name string `json:"name"`
+	//   Mail string `json:"mail" validate:"required,email"`
+	// }
+	//
+	// if request body = {"name":"test", "mail":"example"}
+	//
+	// func handler(ctx poteto.Context) error {
+	//   user := User{}
+	//   err := ctx.BindWithValidate(&user) // caused error
+	// }
+	BindWithValidate(object any) error
+
 	WriteHeader(code int)
 
 	JsonSerialize(value any) error
@@ -231,6 +246,10 @@ func (ctx *context) QueryParam(key string) (string, bool) {
 
 func (ctx *context) Bind(object any) error {
 	return ctx.binder.Bind(ctx, object)
+}
+
+func (ctx *context) BindWithValidate(object any) error {
+	return ctx.binder.BindWithValidate(ctx, object)
 }
 
 func (ctx *context) DebugParam() (string, bool) {

@@ -309,6 +309,68 @@ func TestBindOnContext(t *testing.T) {
 	}
 }
 
+func TestBindWithValidateOnContext(t *testing.T) {
+	type User struct {
+		Name string `json:"name"`
+		Mail string `json:"mail" validate:"required,email"`
+	}
+
+	tests := []struct {
+		name     string
+		body     []byte
+		worked   bool
+		expected User
+	}{
+		{
+			"test ok validate",
+			[]byte(`{"name":"test", "mail":"test@example.com"}`),
+			true, User{Name: "test", Mail: "test@example.com"},
+		},
+		{
+			"test fatal validate",
+			[]byte(`{"name":"test", "mail":"example"}`),
+			false, User{},
+		},
+		{
+			"test fatal bind",
+			[]byte(`{"name":"test",, "mail":"example"}`),
+			false, User{},
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			user := User{}
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "/example.com", bytes.NewBufferString(string(it.body)))
+			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			ctx := NewContext(w, req).(*context)
+
+			err := ctx.BindWithValidate(&user)
+			if err != nil {
+				if it.worked {
+					t.Errorf("unexpected error")
+				}
+				return
+			}
+
+			if !it.worked {
+				t.Errorf("unexpected not error")
+				return
+			}
+
+			if it.expected.Name != user.Name {
+				t.Errorf("Unmatched")
+			}
+
+			if it.expected.Mail != user.Mail {
+				t.Errorf("Unmatched")
+			}
+		})
+	}
+}
+
 func TestNoContent(t *testing.T) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
