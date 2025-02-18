@@ -99,7 +99,7 @@ func TestBindWithValidate(t *testing.T) {
 		{
 			"test ok validate",
 			[]byte(`{"name":"test", "mail":"test@example.com"}`),
-			true, User{Name: "test", Mail: "test@exmaple.com"},
+			false, User{Name: "test", Mail: "test@example.com"},
 		},
 		{
 			"test fatal validate",
@@ -127,8 +127,11 @@ func TestBindWithValidate(t *testing.T) {
 					t.Error("unexpected non-error")
 				}
 			} else {
+				if err != nil {
+					t.Error("unexpected error")
+				}
 				if user != it.expected {
-					t.Error("unmatched")
+					t.Errorf("unmatched: actual(%v) - expected(%v)", user, it.expected)
 				}
 			}
 		})
