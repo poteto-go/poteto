@@ -13,7 +13,7 @@ I appreciate your consideration to contribute to this project! This document is 
 - You can use devcontainer
 - Test
 ```bash
-./run_test.sh
+./scripts/run_test.sh
 ```
 
 ## How to Contribute
