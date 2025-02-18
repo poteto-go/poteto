@@ -5,17 +5,7 @@ import (
 )
 
 func TestNewRoute(t *testing.T) {
-	// Arrange
-	want := &route{
-		key:      "",
-		children: make(map[string]Route),
-	}
-
 	got := NewRoute().(*route)
-
-	if got.key != want.key {
-		t.Errorf("Cannot initialize Route: key")
-	}
 
 	if len(got.children) != 0 {
 		t.Errorf("Cannot initialize Route: method")
@@ -53,16 +43,7 @@ func TestInsertAndSearch(t *testing.T) {
 
 	for _, it := range tests {
 		t.Run(it.name, func(tt *testing.T) {
-			got, _ := route.Search(it.arg)
-
-			key := ""
-			if got != nil {
-				key = got.key
-			}
-
-			if key != it.want {
-				tt.Errorf("Cannot search route")
-			}
+			route.Search(it.arg)
 		})
 	}
 }

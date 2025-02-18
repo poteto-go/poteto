@@ -35,7 +35,7 @@ func (r *route) Search(path string) (*route, []ParamUnit) {
 	currentRoute := r
 	rightPath := path[1:]
 	param := ""
-	httpParams := []ParamUnit{}
+	httpParams := make([]ParamUnit, 0)
 
 	if rightPath == "" {
 		return currentRoute, httpParams

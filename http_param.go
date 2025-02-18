@@ -21,7 +21,7 @@ type HttpParam interface {
 }
 
 func NewHttpParam() HttpParam {
-	params := make(map[string]map[string]string, 4)
+	params := make(map[string]map[string]string, 2)
 
 	httpParam := &httpParam{
 		params: params,
