@@ -82,6 +82,59 @@ func TestZeroLengthContentBind(t *testing.T) {
 	}
 }
 
+func TestBindWithValidate(t *testing.T) {
+	binder := NewBinder()
+
+	type User struct {
+		Name string `json:"name"`
+		Mail string `json:"mail" validate:"required,email"`
+	}
+
+	tests := []struct {
+		name        string
+		body        []byte
+		expectError bool
+		expected    User
+	}{
+		{
+			"test ok validate",
+			[]byte(`{"name":"test", "mail":"test@example.com"}`),
+			true, User{Name: "test", Mail: "test@exmaple.com"},
+		},
+		{
+			"test fatal validate",
+			[]byte(`{"name":"test", "mail":"example"}`),
+			true, User{},
+		},
+		{
+			"test fatal bind",
+			[]byte(`{"name":"test",, "mail":"example"}`),
+			true, User{},
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(it.body)))
+			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			ctx := NewContext(w, req).(*context)
+
+			user := User{}
+			err := binder.BindWithValidate(ctx, &user)
+			if it.expectError {
+				if err == nil {
+					t.Error("unexpected non-error")
+				}
+			} else {
+				if user != it.expected {
+					t.Error("unmatched")
+				}
+			}
+		})
+	}
+}
+
 func BenchmarkBind(b *testing.B) {
 	binder := NewBinder()
 
