@@ -29,11 +29,6 @@ type Poteto interface {
 	SetLogger(logger any)
 	Leaf(basePath string, handler LeafHandler)
 
-	// workflow is a function that is executed when the server starts | end
-	// - constant.START_UP_WORKFLOW: "startUp"
-	//  - This is a workflow that is executed when the server starts
-	RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc)
-
 	GET(path string, handler HandlerFunc) error
 	POST(path string, handler HandlerFunc) error
 	PUT(path string, handler HandlerFunc) error
@@ -60,16 +55,15 @@ type Poteto interface {
 }
 
 type poteto struct {
-	router          Router
-	errorHandler    HttpErrorHandler
-	middlewareTree  MiddlewareTree
-	logger          any
-	cache           sync.Pool
-	option          PotetoOption
-	startupMutex    sync.RWMutex
-	Server          http.Server
-	Listener        net.Listener
-	potetoWorkflows PotetoWorkflows
+	router         Router
+	errorHandler   HttpErrorHandler
+	middlewareTree MiddlewareTree
+	logger         any
+	cache          sync.Pool
+	option         PotetoOption
+	startupMutex   sync.RWMutex
+	Server         http.Server
+	Listener       net.Listener
 }
 
 func New() Poteto {
@@ -77,21 +71,19 @@ func New() Poteto {
 	env.Parse(&DefaultPotetoOption)
 
 	return &poteto{
-		router:          NewRouter(),
-		errorHandler:    &httpErrorHandler{},
-		middlewareTree:  NewMiddlewareTree(),
-		option:          DefaultPotetoOption,
-		potetoWorkflows: NewPotetoWorkflows(),
+		router:         NewRouter(),
+		errorHandler:   &httpErrorHandler{},
+		middlewareTree: NewMiddlewareTree(),
+		option:         DefaultPotetoOption,
 	}
 }
 
 func NewWithOption(option PotetoOption) Poteto {
 	return &poteto{
-		router:          NewRouter(),
-		errorHandler:    &httpErrorHandler{},
-		middlewareTree:  NewMiddlewareTree(),
-		option:          option,
-		potetoWorkflows: NewPotetoWorkflows(),
+		router:         NewRouter(),
+		errorHandler:   &httpErrorHandler{},
+		middlewareTree: NewMiddlewareTree(),
+		option:         option,
 	}
 }
 
@@ -188,21 +180,6 @@ func (p *poteto) Run(addr string) error {
 		return err
 	}
 
-	// Run StartUpWorkflows just before the server starts
-	workflows := p.potetoWorkflows.(*potetoWorkflows)
-	if err := workflows.ApplyStartUpWorkflows(); err != nil {
-		if p.option.DebugMode {
-			utils.PotetoPrint(
-				fmt.Sprintf(
-					"workflows.ApplyStartUpWorkflows reverted with %s",
-					err.Error(),
-				),
-			)
-		}
-		p.startupMutex.Unlock()
-		return err
-	}
-
 	utils.PotetoPrint("server is available at http://127.0.0.1" + addr + "\n")
 
 	p.startupMutex.Unlock()
@@ -238,21 +215,6 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 			utils.PotetoPrint(
 				fmt.Sprintf(
 					"poteto.setupServer reverted with %s",
-					err.Error(),
-				),
-			)
-		}
-		p.startupMutex.Unlock()
-		return err
-	}
-
-	// Run StartUpWorkflows just before the server starts
-	workflows := p.potetoWorkflows.(*potetoWorkflows)
-	if err := workflows.ApplyStartUpWorkflows(); err != nil {
-		if p.option.DebugMode {
-			utils.PotetoPrint(
-				fmt.Sprintf(
-					"workflows.ApplyStartUpWorkflows reverted with %s",
 					err.Error(),
 				),
 			)
@@ -334,10 +296,6 @@ func (p *poteto) Combine(pattern string, middlewares ...MiddlewareFunc) *middlew
 
 func (p *poteto) SetLogger(logger any) {
 	p.logger = logger
-}
-
-func (p *poteto) RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc) {
-	p.potetoWorkflows.(*potetoWorkflows).RegisterWorkflow(workflowType, priority, workflow)
 }
 
 // Leaf makes router group
