@@ -1,3 +1,5 @@
 cover
 .out.tmp
 .vscode/
+*.prof
+*.test

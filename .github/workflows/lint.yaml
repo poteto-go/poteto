@@ -31,7 +31,7 @@ jobs:
         continue-on-error: true
         run: |
           cat <<EOF > result.json
-            $(./run_lint.sh)
+            $(./scripts/run_lint.sh)
           EOF
       - name: Create comment file
         if: ${{ inputs.enable_pr_comment == true }}

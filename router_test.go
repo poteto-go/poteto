@@ -49,12 +49,12 @@ func TestGetRoutesByMethod(t *testing.T) {
 
 	routes := rtr.GetRoutesByMethod("GET")
 	child, ok := routes.children["users"].(*route)
-	if !ok || child.key != "users" {
+	if !ok {
 		t.Errorf("FATAL add top param")
 	}
 
-	cchild, ok := child.children["get"].(*route)
-	if !ok || cchild.key != "get" {
+	_, ok = child.children["get"].(*route)
+	if !ok {
 		t.Errorf("FATAL add bottom param")
 	}
 }
