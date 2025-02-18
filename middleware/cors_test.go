@@ -73,7 +73,7 @@ func TestCORSWithConfigByDefault(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest(it.method, it.url, nil)
-			req.Header.Set(constant.HEADER_ORIGIN, it.origin)
+			req.Header.Set(constant.HeaderOrigin, it.origin)
 			context := poteto.NewContext(w, req)
 
 			handler := func(ctx poteto.Context) error {
@@ -82,7 +82,7 @@ func TestCORSWithConfigByDefault(t *testing.T) {
 
 			cors_handler := cors(handler)
 			cors_handler(context)
-			result := w.Header().Get(constant.HEADER_ACCESS_CONTROL_ORIGIN)
+			result := w.Header().Get(constant.HeaderAccessControlOrigin)
 			if result != it.expected {
 				t.Errorf("Unmatched")
 				t.Errorf(fmt.Sprintf("result: %s", result))

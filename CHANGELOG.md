@@ -78,7 +78,7 @@ func main() {
   p := New()
 
   // run function just before server#Serve
-  p.RegisterWorkflow(constant.START_UP_WORKFLOW, 1, func() error)
+  p.RegisterWorkflow(constant.StartUpWorkflow, 1, func() error)
 }
 ```
 

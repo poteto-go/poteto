@@ -13,7 +13,7 @@ func TestAddAndGetParam(t *testing.T) {
 	hp := NewHttpParam()
 
 	pu := ParamUnit{"key", "value"}
-	hp.AddParam(constant.PARAM_TYPE_PATH, pu)
+	hp.AddParam(constant.ParamTypePath, pu)
 
 	tests := []struct {
 		name         string
@@ -27,7 +27,7 @@ func TestAddAndGetParam(t *testing.T) {
 
 	for _, it := range tests {
 		t.Run(it.name, func(t *testing.T) {
-			value, ok := hp.GetParam(constant.PARAM_TYPE_PATH, it.key)
+			value, ok := hp.GetParam(constant.ParamTypePath, it.key)
 
 			if value != it.expected_val {
 				t.Errorf("Don't Work")
@@ -42,7 +42,7 @@ func TestAddAndGetParam(t *testing.T) {
 
 func TestJsonSerializeHttpParam(t *testing.T) {
 	hp := NewHttpParam()
-	hp.AddParam(constant.PARAM_TYPE_PATH, ParamUnit{key: "key", value: "value"})
+	hp.AddParam(constant.ParamTypePath, ParamUnit{key: "key", value: "value"})
 
 	expected := `{"path":{"key":"value"},"query":{}}`
 	serialized, _ := hp.JsonSerialize()

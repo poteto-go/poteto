@@ -42,7 +42,7 @@ func TestJSON(t *testing.T) {
 				t.Errorf("FATAL: context json")
 			}
 
-			if header := w.Header(); header[constant.HEADER_CONTENT_TYPE][0] != constant.APPLICATION_JSON {
+			if header := w.Header(); header[constant.HeaderContentType][0] != constant.ApplicationJson {
 				t.Errorf("FATAL: wrong content-type")
 			}
 		})
@@ -113,7 +113,7 @@ func TestPathParam(t *testing.T) {
 	req := httptest.NewRequest("GET", url, nil)
 	ctx := NewContext(w, req).(*context)
 
-	ctx.SetParam(constant.PARAM_TYPE_PATH, ParamUnit{key: ":id", value: "1"})
+	ctx.SetParam(constant.ParamTypePath, ParamUnit{key: ":id", value: "1"})
 
 	tests := []struct {
 		name        string
@@ -187,7 +187,7 @@ func TestGetIPFromXFFHeaderByContext(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
-	req.Header.Set(constant.HEADER_X_FORWARDED_FOR, "11.0.0.1, 12.0.0.1, 10.0.0.2, 10.0.0.1")
+	req.Header.Set(constant.HeaderXForwardedFor, "11.0.0.1, 12.0.0.1, 10.0.0.2, 10.0.0.1")
 	ctx := NewContext(w, req).(*context)
 
 	ipString, _ := ctx.GetIPFromXFFHeader()
@@ -205,13 +205,13 @@ func TestRealIP(t *testing.T) {
 	}{
 		{
 			"Get from Real Ip",
-			constant.HEADER_X_REAL_IP,
+			constant.HeaderXRealIp,
 			"11.0.0.1",
 			"11.0.0.1",
 		},
 		{
 			"Get from XFF",
-			constant.HEADER_X_FORWARDED_FOR,
+			constant.HeaderXForwardedFor,
 			"11.0.0.1",
 			"11.0.0.1",
 		},
@@ -282,7 +282,7 @@ func TestBindOnContext(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", "/example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 			ctx := NewContext(w, req).(*context)
 
 			err := ctx.Bind(&user)
@@ -394,13 +394,13 @@ func TestRequestId(t *testing.T) {
 			req := httptest.NewRequest("GET", "/test", nil)
 
 			if it.header != "" {
-				req.Header.Set(constant.HEADER_X_REQUEST_ID, it.header)
+				req.Header.Set(constant.HeaderRequestId, it.header)
 			}
 
 			ctx := NewContext(w, req).(*context)
 
 			if it.stored != "" {
-				ctx.Set(constant.STORE_REQUEST_ID, it.stored)
+				ctx.Set(constant.StoredRequestId, it.stored)
 			}
 
 			requestId := ctx.RequestId()
@@ -441,9 +441,9 @@ func TestDebugParam(t *testing.T) {
 	req := httptest.NewRequest("GET", "/test/", nil)
 	ctx := NewContext(w, req)
 
-	ctx.SetParam(constant.PARAM_TYPE_PATH, ParamUnit{"user_id", "1"})
-	ctx.SetParam(constant.PARAM_TYPE_PATH, ParamUnit{"player_id", "2"})
-	ctx.SetParam(constant.PARAM_TYPE_QUERY, ParamUnit{"user_id", "1"})
+	ctx.SetParam(constant.ParamTypePath, ParamUnit{"user_id", "1"})
+	ctx.SetParam(constant.ParamTypePath, ParamUnit{"player_id", "2"})
+	ctx.SetParam(constant.ParamTypeQuery, ParamUnit{"user_id", "1"})
 
 	expected := `{"path":{"player_id":"2","user_id":"1"},"query":{"user_id":"1"}}`
 

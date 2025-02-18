@@ -30,7 +30,7 @@ type Poteto interface {
 	Leaf(basePath string, handler LeafHandler)
 
 	// workflow is a function that is executed when the server starts | end
-	// - constant.START_UP_WORKFLOW: "startUp"
+	// - constant.StartUpWorkflow: "startUp"
 	//  - This is a workflow that is executed when the server starts
 	RegisterWorkflow(workflowType string, priority uint, workflow WorkflowFunc)
 
@@ -123,9 +123,9 @@ func (p *poteto) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	*/
 	if p.option.WithRequestId {
 		reqId := ctx.RequestId()
-		ctx.Set(constant.STORE_REQUEST_ID, reqId)
-		if id := ctx.GetRequestHeaderParam(constant.HEADER_X_REQUEST_ID); id == "" {
-			ctx.SetResponseHeader(constant.HEADER_X_REQUEST_ID, reqId)
+		ctx.Set(constant.StoredRequestId, reqId)
+		if id := ctx.GetRequestHeaderParam(constant.HeaderRequestId); id == "" {
+			ctx.SetResponseHeader(constant.HeaderRequestId, reqId)
 		}
 	}
 
@@ -146,7 +146,7 @@ func (p *poteto) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx.SetQueryParam(r.URL.Query())
 	ctx.SetPath(r.URL.Path)
 	for _, httpParam := range httpParams {
-		ctx.SetParam(constant.PARAM_TYPE_PATH, httpParam)
+		ctx.SetParam(constant.ParamTypePath, httpParam)
 	}
 
 	// Search middleware
@@ -170,8 +170,8 @@ func (p *poteto) applyMiddleware(middlewares []MiddlewareFunc, handler HandlerFu
 func (p *poteto) Run(addr string) error {
 	p.startupMutex.Lock()
 
-	if !strings.Contains(addr, constant.PARAM_PREFIX) {
-		addr = constant.PARAM_PREFIX + addr
+	if !strings.Contains(addr, constant.ParamPrefix) {
+		addr = constant.ParamPrefix + addr
 	}
 
 	p.Server.Addr = addr
