@@ -1,0 +1,59 @@
+
+run :
+  issues-exit-code: 0
+
+  skip-files:
+    - banner.go
+    - ".*_test\\.go"
+
+issues:
+  max-issues-per-linter: 1000
+  max-same-issues: 1000
+
+output :
+  format : checkstyle
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - bodyclose
+    - depguard
+    - dogsled
+    - gochecknoglobals
+    - gochecknoinits
+    # - goconst
+    - gocritic
+    - gofmt
+    - goimports
+    # - golint
+    - gosec
+    - interfacer
+    - misspell
+    - nakedret
+    - prealloc
+    - scopelint
+    # - stylecheck
+    - unconvert
+    - unparam
+    # - whitespace
+    # - wsl
+
+linters-settings:
+  errcheck:
+    ignore: '[rR]ead|[w|W]rite|[c|C]lose|[c|C]ommit|[r|R]ollback|[p|P]rintln'
+
+  goconst:
+    min-len : 5
+
+  golint:
+    min-confidence : 1.0
