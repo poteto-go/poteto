@@ -344,7 +344,7 @@ func TestBindWithValidateOnContext(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", "/example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 			ctx := NewContext(w, req).(*context)
 
 			err := ctx.BindWithValidate(&user)
