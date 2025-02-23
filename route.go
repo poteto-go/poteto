@@ -17,7 +17,6 @@ type Route interface {
 }
 
 type route struct {
-	key           string
 	children      map[string]Route
 	childParamKey string
 	handler       HandlerFunc
@@ -25,7 +24,6 @@ type route struct {
 
 func NewRoute() Route {
 	return &route{
-		key:           "",
 		children:      make(map[string]Route),
 		childParamKey: "",
 	}
@@ -35,7 +33,7 @@ func (r *route) Search(path string) (*route, []ParamUnit) {
 	currentRoute := r
 	rightPath := path[1:]
 	param := ""
-	httpParams := []ParamUnit{}
+	httpParams := make([]ParamUnit, 0)
 
 	if rightPath == "" {
 		return currentRoute, httpParams
@@ -98,7 +96,6 @@ func (r *route) Insert(path string, handler HandlerFunc) {
 			}
 
 			currentRoute.children[param] = &route{
-				key:      param,
 				children: make(map[string]Route),
 			}
 		}
