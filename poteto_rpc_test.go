@@ -173,7 +173,7 @@ func TestPotetoJSONRPCAdapter(t *testing.T) {
 	for _, it := range tests {
 		t.Run(it.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
-			it.req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			it.req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 			ctx := NewContext(w, it.req).(*context)
 
 			rpc := TestCalculator{}

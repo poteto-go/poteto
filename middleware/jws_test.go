@@ -45,7 +45,7 @@ func TestKeyFunc(t *testing.T) {
 		{
 			"Test valid token",
 			potetoJWSConfig{
-				SignMethod: constant.ALGORITHM_HS256,
+				SignMethod: constant.AlgorithmHS256,
 				ContextKey: "user",
 				SignKey:    []byte("secret"),
 			},
@@ -65,7 +65,7 @@ func TestKeyFunc(t *testing.T) {
 		{
 			"Test nil sign key throw error",
 			potetoJWSConfig{
-				SignMethod: constant.ALGORITHM_HS256,
+				SignMethod: constant.AlgorithmHS256,
 				ContextKey: "user",
 				SignKey:    nil,
 			},

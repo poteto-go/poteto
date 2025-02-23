@@ -24,8 +24,8 @@ type PotetoJWSConfig interface {
 }
 
 var DefaultJWSConfig = &potetoJWSConfig{
-	AuthScheme: constant.AUTH_SCHEME,
-	SignMethod: constant.ALGORITHM_HS256,
+	AuthScheme: constant.AuthScheme,
+	SignMethod: constant.AlgorithmHS256,
 	ContextKey: "user",
 	ClaimsFunc: func(c poteto.Context) jwt.Claims {
 		return jwt.MapClaims{}
@@ -87,8 +87,8 @@ func JWSWithConfig(cfg PotetoJWSConfig) poteto.MiddlewareFunc {
 }
 
 func extractBearer(ctx poteto.Context) (string, error) {
-	authHeader := ctx.GetRequest().Header.Get(constant.HEADER_AUTHORIZATION)
-	target := constant.AUTH_SCHEME
+	authHeader := ctx.GetRequest().Header.Get(constant.HeaderAuthorization)
+	target := constant.AuthScheme
 	bearers := strings.Split(authHeader, target)
 	if len(bearers) <= 1 {
 		return "", errors.New("not included bearer token")

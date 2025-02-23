@@ -34,7 +34,7 @@ func matchSubdomain(domain, pattern string) bool {
 	domAuth := domain[didx+3:] // after [://]
 
 	// avoid too long
-	if len(domAuth) > constant.MAX_DOMAIN_LENGTH {
+	if len(domAuth) > constant.MaxDomainLength {
 		return false
 	}
 	patAuth := pattern[pidx+3:]

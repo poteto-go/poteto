@@ -119,7 +119,7 @@ func (r *route) Insert(path string, handler HandlerFunc) {
 }
 
 func hasParamPrefix(param string) bool {
-	return strings.HasPrefix(param, constant.PARAM_PREFIX)
+	return strings.HasPrefix(param, constant.ParamPrefix)
 }
 
 func (r *route) GetHandler() HandlerFunc {

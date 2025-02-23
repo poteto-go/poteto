@@ -139,7 +139,7 @@ func RequestLoggerWithConfig(config RequestLoggerConfig) poteto.MiddlewareFunc {
 			}
 
 			if config.HasContentLength {
-				rlv.ContentLength = res.Header().Get(constant.HEADER_CONTENT_LENGTH)
+				rlv.ContentLength = res.Header().Get(constant.HeaderContentLength)
 			}
 
 			if len(config.OpenHeaders) > 0 {
