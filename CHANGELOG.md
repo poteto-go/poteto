@@ -1,5 +1,13 @@
 # 1.x.x
 
+## 1.5.X
+
+### 1.5.0
+
+FEAT: ctx.BindWithValidate is validate body by github.com/go-playground/validator/v10 by @poteto0 in #240
+REF: Make constant chamelCase (this change is not breaking) by @poteto0 in #237
+OPT: delete no-needed key for route by @poteto0 in #234
+
 ## 1.4.X
 
 ### 1.4.1
