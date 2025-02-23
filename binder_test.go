@@ -117,7 +117,7 @@ func TestBindWithValidate(t *testing.T) {
 		t.Run(it.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
+			req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 			ctx := NewContext(w, req).(*context)
 
 			user := User{}
