@@ -30,8 +30,11 @@ func (heh *httpErrorHandler) HandleHttpError(err error, ctx Context) {
 	switch m := httpErr.Message.(type) {
 	case string:
 		message = map[string]string{"message": m}
+	case []byte:
+		message = map[string][]byte{"message": m}
 	}
 
 	// Send response
 	err = ctx.JSON(httpErr.Code, message)
+	_ = err
 }

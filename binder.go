@@ -34,8 +34,7 @@ func (b *binder) Bind(ctx Context, object any) error {
 	)
 	mediaType := strings.TrimSpace(base)
 
-	switch mediaType {
-	case constant.ApplicationJson:
+	if mediaType == constant.ApplicationJson {
 		if err := ctx.JsonDeserialize(object); err != nil {
 			return err
 		}

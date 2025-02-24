@@ -11,7 +11,7 @@ type ParamUnit struct {
 }
 
 type httpParam struct {
-	params map[string]map[string]string `json:"params"`
+	params map[string]map[string]string
 }
 
 type HttpParam interface {

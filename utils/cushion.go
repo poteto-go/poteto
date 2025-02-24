@@ -26,7 +26,7 @@ func YamlParse[T string | []byte](source T, dest any) error {
 }
 
 func AssertToInt(source any) (int, bool) {
-	switch asserted := any(source).(type) {
+	switch asserted := source.(type) {
 	case string:
 		tmp, _ := strconv.Atoi(asserted)
 		return tmp, true
