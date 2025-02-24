@@ -2,6 +2,12 @@
 
 ## 1.5.X
 
+### 1.5.1
+
+OPT: Memory optimization of httpParams by @poteto0 in #250
+REF: refactor with new linter by @poteto0 in #249
+OP: using `golangci-lint` by @poteto0 in #247
+
 ### 1.5.0
 
 FEAT: ctx.BindWithValidate is validate body by github.com/go-playground/validator/v10 by @poteto0 in #240
