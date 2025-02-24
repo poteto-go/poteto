@@ -74,7 +74,9 @@ type poteto struct {
 
 func New() Poteto {
 	var DefaultPotetoOption PotetoOption
-	env.Parse(&DefaultPotetoOption)
+	if err := env.Parse(&DefaultPotetoOption); err != nil {
+		panic(err)
+	}
 
 	return &poteto{
 		router:          NewRouter(),
