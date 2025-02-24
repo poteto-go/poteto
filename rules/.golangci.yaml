@@ -33,7 +33,7 @@ linters:
     - gochecknoinits
     # - goconst
     - gocritic
-    - gofmt
+    # - gofmt
     - goimports
     # - golint
     - gosec
