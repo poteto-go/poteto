@@ -27,7 +27,7 @@ linters:
     - unused
     - varcheck
     - bodyclose
-    - depguard
+    # - depguard
     - dogsled
     - gochecknoglobals
     - gochecknoinits

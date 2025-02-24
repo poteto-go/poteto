@@ -40,7 +40,7 @@ jobs:
           Hello I'm Potetobot : ).
           Thank you for your contribution.
           Linting results are as follows (if none, it means no issues were found):
-          \`\`\`json
+          \`\`\`xml
           $(golangci-lint run -c rules/.golangci.yaml)
           \`\`\`
           EOF
