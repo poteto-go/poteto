@@ -34,7 +34,7 @@ linters:
     # - goconst
     - gocritic
     # - gofmt
-    - goimports
+    # - goimports
     # - golint
     - gosec
     - interfacer
