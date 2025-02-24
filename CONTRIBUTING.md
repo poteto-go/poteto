@@ -28,15 +28,21 @@ If you find a bug or have a feature request, please open an issue on GitHub.
 ### Development
 
 1. Check [the Issue Tracker](https://github.com/poteto-go/poteto/issues), make sure if there is anything relevant to the problem you are trying to solve. Or create New Issue.
-2. Fork repo
-3. Create a new branch.
+1. Fork repo
+1. Create a new branch.
 
-```bash
-git checkout -b your-account/feature
-```
+   ```bash
+   git checkout -b your-account/feature
+   ```
 
-4. Make changes to the code and run tests to make sure everything is working properly.
-5. Write a clear commit message.
-6. Pull request
+1. Make changes to the code and run tests to make sure everything is working properly.
+1. Write a clear commit message.
+1. Run linter
+
+   ```bash
+   golangci-lint run -c rules/.golangci.yaml
+   ```
+
+1. Pull request
 
 ### Thank you :)
