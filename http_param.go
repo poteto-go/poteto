@@ -11,29 +11,29 @@ type ParamUnit struct {
 }
 
 type httpParam struct {
-	params map[string]map[string]string
+	pathParams  map[string]string
+	queryParams map[string]string
 }
 
 type HttpParam interface {
+	selectParam(paramType string) map[string]string
 	GetParam(paramType, key string) (string, bool)
 	AddParam(paramType string, paramUnit ParamUnit)
 	JsonSerialize() ([]byte, error)
 }
 
 func NewHttpParam() HttpParam {
-	params := make(map[string]map[string]string, 2)
-
 	httpParam := &httpParam{
-		params: params,
+		pathParams:  make(map[string]string),
+		queryParams: make(map[string]string),
 	}
 
-	httpParam.params[constant.ParamTypePath] = make(map[string]string)
-	httpParam.params[constant.ParamTypeQuery] = make(map[string]string)
 	return httpParam
 }
 
 func (hp *httpParam) GetParam(paramType, key string) (string, bool) {
-	val := hp.params[paramType][key]
+	targetParams := hp.selectParam(paramType)
+	val := targetParams[key]
 	if val != "" {
 		return val, true
 	}
@@ -42,11 +42,27 @@ func (hp *httpParam) GetParam(paramType, key string) (string, bool) {
 }
 
 func (hp *httpParam) AddParam(paramType string, paramUnit ParamUnit) {
-	hp.params[paramType][paramUnit.key] = paramUnit.value
+	targetParams := hp.selectParam(paramType)
+	targetParams[paramUnit.key] = paramUnit.value
+}
+
+func (hp *httpParam) selectParam(paramType string) map[string]string {
+	switch paramType {
+	case constant.ParamTypePath:
+		return hp.pathParams
+	case constant.ParamTypeQuery:
+		return hp.queryParams
+	}
+	return make(map[string]string)
 }
 
 func (hp *httpParam) JsonSerialize() ([]byte, error) {
-	v, err := json.Marshal(hp.params)
+	unionParams := map[string]map[string]string{
+		constant.ParamTypePath:  hp.pathParams,
+		constant.ParamTypeQuery: hp.queryParams,
+	}
+
+	v, err := json.Marshal(unionParams)
 	if err != nil {
 		return []byte{}, err
 	}
