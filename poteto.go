@@ -216,7 +216,7 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 	p.startupMutex.Lock()
 
 	// Setting TLS
-	p.Server.TLSConfig = &tls.Config{}
+	p.Server.TLSConfig = &tls.Config{MinVersion: 0x0303} // Version 1.2
 	p.Server.TLSConfig.Certificates = make([]tls.Certificate, 1)
 	parsedCert, err := tls.X509KeyPair(cert, key)
 	if err != nil {
