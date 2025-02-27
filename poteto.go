@@ -61,6 +61,18 @@ type Poteto interface {
 	// Chain Handler & middleware
 	//
 	// This is high-readability on just-one-path middleware
+	//
+	// func main() {
+	//   p := poteto.New()
+	//
+	//   p.GET(
+	//     "/users",
+	//     p.Chain(
+	//       middleware1,
+	//       middleware2,
+	//     )(handler)
+	//   )
+	// }
 	Chain(middlewares ...MiddlewareFunc) func(HandlerFunc) HandlerFunc
 }
 
