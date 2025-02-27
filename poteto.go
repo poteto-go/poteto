@@ -57,6 +57,11 @@ type Poteto interface {
 	//  resBodyStr := res.Body.String
 	//  // => {"id":"1","name":"tester"}
 	Play(method, path string, body ...string) *httptest.ResponseRecorder
+
+	// Chain Handler & middleware
+	//
+	// This is high-readability on just-one-path middleware
+	Chain(middlewares ...MiddlewareFunc) func(HandlerFunc) HandlerFunc
 }
 
 type poteto struct {
@@ -408,4 +413,13 @@ func (p *poteto) Play(method, path string, body ...string) *httptest.ResponseRec
 	p.ServeHTTP(resp, req)
 
 	return resp
+}
+
+func (p *poteto) Chain(middlewares ...MiddlewareFunc) func(HandlerFunc) HandlerFunc {
+	return func(handler HandlerFunc) HandlerFunc {
+		for _, middleware := range middlewares {
+			handler = middleware(handler)
+		}
+		return handler
+	}
 }
