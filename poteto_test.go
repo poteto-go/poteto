@@ -268,3 +268,32 @@ func TestStopHandleError(t *testing.T) {
 		t.Errorf("Unmatched")
 	}
 }
+
+func TestChain(t *testing.T) {
+	p := New()
+
+	p.GET(
+		"/users",
+		p.Chain(
+			sampleMiddleware,
+			sampleMiddleware2,
+		)(getAllUserForTest),
+	)
+
+	res := p.Play(http.MethodGet, "/users")
+	hv1 := res.Header().Get("Hello")
+	hv2 := res.Header().Get("Hello2")
+	resBodyStr := res.Body.String()
+
+	if resBodyStr[:len(resBodyStr)-1] != `{"name":"user"}` {
+		t.Error("unmatched")
+	}
+
+	if hv1 != "world" {
+		t.Error("unmatched")
+	}
+
+	if hv2 != "world2" {
+		t.Error("unmatched")
+	}
+}

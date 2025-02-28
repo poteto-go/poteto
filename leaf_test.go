@@ -35,7 +35,7 @@ func TestLeaf(t *testing.T) {
 			"/users",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Post",
@@ -43,7 +43,7 @@ func TestLeaf(t *testing.T) {
 			"/users/create",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Put",
@@ -51,7 +51,7 @@ func TestLeaf(t *testing.T) {
 			"/users/change",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Patch",
@@ -59,7 +59,7 @@ func TestLeaf(t *testing.T) {
 			"/users/patch",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Delete",
@@ -67,7 +67,7 @@ func TestLeaf(t *testing.T) {
 			"/users/delete",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Head",
@@ -75,7 +75,7 @@ func TestLeaf(t *testing.T) {
 			"/users/head",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Options",
@@ -83,7 +83,7 @@ func TestLeaf(t *testing.T) {
 			"/users/options",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Trace",
@@ -91,7 +91,7 @@ func TestLeaf(t *testing.T) {
 			"/users/trace",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Connect",
@@ -99,7 +99,7 @@ func TestLeaf(t *testing.T) {
 			"/users/connect",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 	}
 
