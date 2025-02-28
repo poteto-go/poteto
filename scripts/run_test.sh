@@ -1,4 +1,10 @@
-#!bin/bash
+#!/bin/bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+LANG=C
+
 echo "start test"
 # noinlineによるテスト実行
 # https://github.com/poteto-go/poteto/issues/169
