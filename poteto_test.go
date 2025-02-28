@@ -269,6 +269,32 @@ func TestStopHandleError(t *testing.T) {
 	}
 }
 
+func TestCheck(t *testing.T) {
+	p := New()
+
+	p.GET("/users", getAllUserForTest)
+
+	tests := []struct {
+		name     string
+		method   string
+		path     string
+		expected bool
+	}{
+		{"hit handler", http.MethodGet, "/users", true},
+		{"different path", http.MethodGet, "/unexpected", false},
+		{"different method", http.MethodPost, "/users", false},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			result := p.Check(it.method, it.path)
+			if result != it.expected {
+				t.Errorf("unmatched: actual(%v) - expected(%v)", result, it.expected)
+			}
+		})
+	}
+}
+
 func TestChain(t *testing.T) {
 	p := New()
 

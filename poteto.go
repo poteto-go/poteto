@@ -58,6 +58,17 @@ type Poteto interface {
 	//  // => {"id":"1","name":"tester"}
 	Play(method, path string, body ...string) *httptest.ResponseRecorder
 
+	// check if target route has handler.
+	// func main() {
+	//   p := poteto.New()
+	//
+	//   p.GET("/users", handler)
+	//
+	//   ok := p.Check(http.MethodGet, "/users") // -> return true
+	//   ng := p.Check(http.MethodPost, "/users") // -> return false
+	// }
+	Check(method, path string) bool
+
 	// Chain Handler & middleware
 	//
 	// This is high-readability on just-one-path middleware
@@ -425,6 +436,16 @@ func (p *poteto) Play(method, path string, body ...string) *httptest.ResponseRec
 	p.ServeHTTP(resp, req)
 
 	return resp
+}
+
+func (p *poteto) Check(method, path string) bool {
+	routes := p.router.GetRoutesByMethod(method)
+	targetRoute, _ := routes.Search(path)
+	if targetRoute == nil {
+		return false
+	}
+
+	return targetRoute.GetHandler() != nil
 }
 
 func (p *poteto) Chain(middlewares ...MiddlewareFunc) func(HandlerFunc) HandlerFunc {
