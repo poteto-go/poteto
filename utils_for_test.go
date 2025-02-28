@@ -26,7 +26,7 @@ func sampleMiddleware2(next HandlerFunc) HandlerFunc {
 }
 
 type user struct {
-	Name string `json:"string"`
+	Name string `json:"name"`
 }
 
 type testVal struct {

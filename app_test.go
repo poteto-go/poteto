@@ -215,7 +215,7 @@ func TestLeafHandler(t *testing.T) {
 			"/users",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Post",
@@ -223,7 +223,7 @@ func TestLeafHandler(t *testing.T) {
 			"/users/create",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Put",
@@ -231,7 +231,7 @@ func TestLeafHandler(t *testing.T) {
 			"/users/change",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 		{
 			"Test Delete",
@@ -239,7 +239,7 @@ func TestLeafHandler(t *testing.T) {
 			"/users/delete",
 			"Hello",
 			"world",
-			`{"string":"user"}`,
+			`{"name":"user"}`,
 		},
 	}
 
@@ -298,11 +298,11 @@ func TestParamRouter(t *testing.T) {
 
 			p.ServeHTTP(w, req)
 
-			if w.Body.String()[0:10] != `{"string":"user"}`[0:10] {
+			if w.Body.String()[0:10] != `{"name":"user"}`[0:10] {
 				t.Errorf(
 					"Unmatched actual(%s) -> expected(%s)",
 					w.Body.String()[0:10],
-					`{"string":"user"}`[0:10],
+					`{"name":"user"}`[0:10],
 				)
 			}
 
