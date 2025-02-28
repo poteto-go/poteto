@@ -1,18 +1,28 @@
 # 1.x.x
 
+## 1.6.X
+
+### 1.6.0
+
+- REF: refactor bash script by @poteto0 in #258
+- TYPO: fix typo in workflow by @poteto0 in #258
+- OP: add googlecodeassist by @poteto0 in #258
+- FEAT: check handler is defined `p.Check(method, path) bool` by @poteto0 in #257
+- FEAT: `p.Chain(middlewares)(handler)` make your handler great by @poteto0 in #256
+
 ## 1.5.X
 
 ### 1.5.1
 
-OPT: Memory optimization of httpParams by @poteto0 in #250
-REF: refactor with new linter by @poteto0 in #249
-OP: using `golangci-lint` by @poteto0 in #247
+- OPT: Memory optimization of httpParams by @poteto0 in #250
+- REF: refactor with new linter by @poteto0 in #249
+- OP: using `golangci-lint` by @poteto0 in #247
 
 ### 1.5.0
 
-FEAT: ctx.BindWithValidate is validate body by github.com/go-playground/validator/v10 by @poteto0 in #240
-REF: Make constant chamelCase (this change is not breaking) by @poteto0 in #237
-OPT: delete no-needed key for route by @poteto0 in #234
+- FEAT: ctx.BindWithValidate is validate body by github.com/go-playground/validator/v10 by @poteto0 in #240
+- REF: Make constant chamelCase (this change is not breaking) by @poteto0 in #237
+- OPT: delete no-needed key for route by @poteto0 in #234
 
 ## 1.4.X
 
