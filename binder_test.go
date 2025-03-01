@@ -2,13 +2,21 @@ package poteto
 
 import (
 	"bytes"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/poteto-go/poteto/constant"
+	"github.com/poteto-go/poteto/perror"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestBind(t *testing.T) {
+func TestNewBind(t *testing.T) {
+	binder := NewBinder()
+	assert.NotNil(t, binder)
+}
+
+func TestBinder_Bind(t *testing.T) {
 	binder := NewBinder()
 
 	type User struct {
@@ -16,70 +24,78 @@ func TestBind(t *testing.T) {
 		Mail string `json:"mail"`
 	}
 
-	tests := []struct {
-		name     string
-		body     []byte
-		worked   bool
-		expected User
-	}{
-		{
-			"Test Normal Case",
-			[]byte(`{"name":"test", "mail":"example"}`),
-			true,
-			User{Name: "test", Mail: "example"},
-		},
-		{
-			"Test Error Case",
-			[]byte(`{"name":"test",, "mail":"example"}`),
-			false,
-			User{Name: "test", Mail: "example"},
-		},
-	}
+	t.Run("Success", func(t *testing.T) {
+		// Arrange
+		expected := User{Name: "test", Mail: "example"}
+		req := httptest.NewRequest(
+			http.MethodGet,
+			"https://example.com",
+			bytes.NewBufferString(`{"name":"test", "mail":"example"}`),
+		)
+		req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
+		ctx := NewContext(httptest.NewRecorder(), req).(*context)
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			user := User{}
+		// Act
+		user := User{}
+		err := binder.Bind(ctx, &user)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
-			ctx := NewContext(w, req).(*context)
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, expected, user)
+	})
 
-			err := binder.Bind(ctx, &user)
-			if err != nil {
-				if it.worked {
-					t.Errorf("unexpected error")
-				}
-				return
-			}
+	t.Run("MarshallError", func(t *testing.T) {
+		// Arrange
+		req := httptest.NewRequest(
+			http.MethodGet,
+			"https://example.com",
+			bytes.NewBufferString(`{"name":"test",, "mail":"example"}`),
+		)
+		req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
+		ctx := NewContext(httptest.NewRecorder(), req).(*context)
 
-			if !it.worked {
-				t.Errorf("unexpected not error")
-				return
-			}
+		// Act
+		user := User{}
+		err := binder.Bind(ctx, &user)
 
-			if it.expected.Name != user.Name {
-				t.Errorf("Unmatched")
-			}
+		// Assert
+		assert.Error(t, err)
+	})
 
-			if it.expected.Mail != user.Mail {
-				t.Errorf("Unmatched")
-			}
-		})
-	}
-}
+	t.Run("ZeroLengthError", func(t *testing.T) {
+		// Arrange
+		req := httptest.NewRequest(
+			http.MethodGet,
+			"https://example.com",
+			bytes.NewBufferString(``),
+		)
+		req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
+		ctx := NewContext(httptest.NewRecorder(), req).(*context)
 
-func TestZeroLengthContentBind(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(userJSON)))
-	req.ContentLength = 0
-	ctx := NewContext(w, req).(*context)
+		// Act
+		user := User{}
+		err := binder.Bind(ctx, &user)
 
-	user := user{}
-	binder := NewBinder()
-	if err := binder.Bind(ctx, &user); err != nil {
-		t.Errorf("cannot go through")
-	}
+		// Assert
+		assert.ErrorIs(t, err, perror.ErrZeroLengthContent)
+	})
+
+	t.Run("NotApplicationJsonError", func(t *testing.T) {
+		// Arrange
+		req := httptest.NewRequest(
+			http.MethodGet,
+			"https://example.com",
+			bytes.NewBufferString(`{"name":"test", "mail":"example"}`),
+		)
+		ctx := NewContext(httptest.NewRecorder(), req).(*context)
+
+		// Act
+		user := User{}
+		err := binder.Bind(ctx, &user)
+
+		// Assert
+		assert.ErrorIs(t, err, perror.ErrNotApplicationJson)
+	})
 }
 
 func TestBindWithValidate(t *testing.T) {
@@ -123,30 +139,34 @@ func TestBindWithValidate(t *testing.T) {
 			user := User{}
 			err := binder.BindWithValidate(ctx, &user)
 			if it.expectError {
-				if err == nil {
-					t.Error("unexpected non-error")
-				}
+				assert.Error(t, err)
 			} else {
-				if err != nil {
-					t.Error("unexpected error")
-				}
-				if user != it.expected {
-					t.Errorf("unmatched: actual(%v) - expected(%v)", user, it.expected)
-				}
+				assert.NoError(t, err)
+				assert.Equal(t, it.expected, user)
 			}
 		})
 	}
 }
 
-func BenchmarkBind(b *testing.B) {
+func BenchmarkBind_Bind(b *testing.B) {
+	type User struct {
+		Name string `json:"name"`
+		Mail string `json:"mail"`
+	}
+
 	binder := NewBinder()
 
+	// Arrange
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "https://example.com", bytes.NewBufferString(string(userJSON)))
+	req := httptest.NewRequest(
+		http.MethodGet,
+		"https://example.com",
+		bytes.NewBufferString(`{"name":"test", "mail":"example"}`),
+	)
 	req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
 	ctx := NewContext(w, req).(*context)
 
-	testUser := user{}
+	testUser := User{}
 
 	b.ResetTimer()
 

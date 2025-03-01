@@ -6,6 +6,7 @@ require (
 	bou.ke/monkey v1.0.2
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/fatih/color v1.18.0
+	github.com/go-playground/assert/v2 v2.2.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/goccy/go-json v0.10.5
 	github.com/goccy/go-yaml v1.15.23
@@ -13,19 +14,22 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/harakeishi/gats v0.0.0-20230219034858-055bc915842a
 	github.com/poteto-go/tslice v0.4.0
-	github.com/quasilyte/go-ruleguard/dsl v0.3.22
+	github.com/stretchr/testify v1.8.4
 	github.com/ybbus/jsonrpc/v3 v3.1.6
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (

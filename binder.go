@@ -5,12 +5,16 @@ import (
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/poteto-go/poteto/constant"
+	"github.com/poteto-go/poteto/perror"
 )
 
 type Binder interface {
 	// Bind request body -> &object
 	//
-	// it needs "Content-Type: application/json" in request header
+	// if unset "Content-Type: application/json", return perror.ErrUnsetHeaderApplicationJson
+	//
+	// if zero length content, return perror.ErrZeroLengthContent
+	//
 	Bind(ctx Context, object any) error
 
 	// Bind with github.com/go-playground/validator/v10
@@ -26,7 +30,7 @@ func NewBinder() Binder {
 func (b *binder) Bind(ctx Context, object any) error {
 	req := ctx.GetRequest()
 	if req.ContentLength == 0 {
-		return nil
+		return perror.ErrZeroLengthContent
 	}
 
 	base, _, _ := strings.Cut(
@@ -34,14 +38,14 @@ func (b *binder) Bind(ctx Context, object any) error {
 	)
 	mediaType := strings.TrimSpace(base)
 
-	if mediaType == constant.ApplicationJson {
-		if err := ctx.JsonDeserialize(object); err != nil {
-			return err
-		}
+	if mediaType != constant.APPLICATION_JSON {
+		// if not application/json
+		return perror.ErrNotApplicationJson
 	}
 
-	// if not application/json
-	// return nil
+	if err := ctx.JsonDeserialize(object); err != nil {
+		return err
+	}
 	return nil
 }
 
