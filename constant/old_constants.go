@@ -1,6 +1,6 @@
 package constant
 
-const VERSION = "v1.6.0"
+const VERSION = "v1.6.1"
 
 const (
 	MAX_DOMAIN_LENGTH      int    = 255
