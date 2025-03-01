@@ -2,6 +2,15 @@
 
 ## 1.6.X
 
+### 1.6.1
+
+- GEMINI: add `rules/.geminirules` by @poteto0 in #261
+- REF: refactor ut on context by @poteto0 in #261
+- UT: better coverage on context by @poteto0 in #261
+- UT: add benchmark for `RequestId` by @poteto0 in #261
+- REF: refactor ut on binder by @poteto0 in #260
+- CHANGE: now `ctx.Bind` throw `perror.ErrZeroLengthContent` | `perror.ErrNotApplicationJson` by @poteto0 in #260
+
 ### 1.6.0
 
 - REF: refactor bash script by @poteto0 in #258
