@@ -362,6 +362,7 @@ func (ctx *context) Reset(w http.ResponseWriter, r *http.Request) {
 	ctx.response = NewResponse(w)
 	ctx.httpParams = NewHttpParam()
 	ctx.store = make(map[string]any)
+	ctx.path = ""
 }
 
 func (ctx *context) SetLogger(logger any) {

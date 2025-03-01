@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"strings"
 	"sync"
@@ -623,4 +624,292 @@ func TestContext_JSONRPCError(t *testing.T) {
 
 	// Act
 	ctx.JSONRPCError(http.StatusOK, "message", "data", 10)
+}
+
+func TestContext_SetQueryParam(t *testing.T) {
+	tests := []struct {
+		name          string
+		queryParams   url.Values
+		expected      map[string]string
+		expectedCount int
+		maxParamCount int
+	}{
+		{
+			name: "Normal case",
+			queryParams: url.Values{
+				"key1": {"value1"},
+				"key2": {"value2", "value3"},
+			},
+			expected: map[string]string{
+				"key1": "value1",
+				"key2": "value2, value3",
+			},
+			expectedCount: 2,
+			maxParamCount: constant.MaxQueryParamCount,
+		},
+		{
+			name:          "Empty query params",
+			queryParams:   url.Values{},
+			expected:      map[string]string{},
+			expectedCount: 0,
+			maxParamCount: constant.MaxQueryParamCount,
+		},
+		{
+			name: "Too many query params",
+			queryParams: func() url.Values {
+				values := url.Values{}
+				for i := 0; i < constant.MaxQueryParamCount+1; i++ {
+					values[string(rune('a'+i))] = []string{"value"}
+				}
+				return values
+			}(),
+			expected:      map[string]string{},
+			expectedCount: 0,
+			maxParamCount: constant.MaxQueryParamCount,
+		},
+		{
+			name: "empty value",
+			queryParams: url.Values{
+				"key1": {},
+			},
+			expected:      map[string]string{},
+			expectedCount: 0,
+			maxParamCount: constant.MaxQueryParamCount,
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			// Arrange
+			ctx := NewContext(nil, nil).(*context)
+
+			// Act
+			ctx.SetQueryParam(it.queryParams)
+
+			// Assert
+			assert.Equal(t, len(ctx.httpParams.(*httpParam).queryParams), it.expectedCount)
+
+			for key, value := range it.expected {
+				actualValue, ok := ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
+				assert.True(t, ok)
+				assert.Equal(t, value, actualValue)
+			}
+		})
+	}
+}
+func TestContext_SetParam(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
+	paramType := "test"
+	paramUnit := ParamUnit{
+		key:   "key",
+		value: "value",
+	}
+
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.httpParams),
+		"AddParam",
+		func(_ *httpParam, paramType string, param ParamUnit) {
+			// Assert
+			assert.Equal(t, paramType, paramType)
+			assert.Equal(t, paramUnit, param)
+		},
+	)
+
+	// Act
+	ctx.SetParam(paramType, paramUnit)
+}
+
+func TestContext_GetRequest(t *testing.T) {
+	// Arrange
+	req := httptest.NewRequest("GET", "/test", nil)
+	ctx := NewContext(nil, req).(*context)
+
+	// Act
+	result := ctx.GetRequest()
+
+	// Assert
+	assert.Equal(t, req, result)
+}
+
+func TestContext_GetRequestHeaderParam(t *testing.T) {
+	tests := []struct {
+		name        string
+		headerKey   string
+		headerValue string
+		expected    string
+	}{
+		{
+			"Normal case",
+			"X-Request-Id",
+			"test-id",
+			"test-id",
+		},
+		{
+			"Empty value",
+			"X-Empty",
+			"",
+			"",
+		},
+		{
+			"Not existing value",
+			"X-NotExist",
+			"",
+			"",
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			// Arrange
+			req := httptest.NewRequest("GET", "/test", nil)
+			req.Header.Set(it.headerKey, it.headerValue)
+			ctx := NewContext(nil, req).(*context)
+
+			// Act
+			result := ctx.GetRequestHeaderParam(it.headerKey)
+
+			// Assert
+			assert.Equal(t, it.expected, result)
+		})
+	}
+}
+
+func TestContext_ExtractRequestHeaderParam(t *testing.T) {
+	tests := []struct {
+		name        string
+		headerKey   string
+		headerValue []string
+		expected    []string
+	}{
+		{
+			"Normal case",
+			"X-Test",
+			[]string{"value1", "value2"},
+			[]string{"value1", "value2"},
+		},
+		{
+			"Empty value",
+			"X-Empty",
+			[]string{},
+			[]string{},
+		},
+		{
+			"Not existing value",
+			"X-NotExist",
+			nil,
+			nil,
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			// Arrange
+			req := httptest.NewRequest("GET", "/test", nil)
+			req.Header[it.headerKey] = it.headerValue
+			ctx := NewContext(nil, req).(*context)
+
+			// Act
+			result := ctx.ExtractRequestHeaderParam(it.headerKey)
+
+			// Assert
+			assert.Equal(t, it.expected, result)
+		})
+	}
+}
+
+func TestContext_JsonSerialize(t *testing.T) {
+	tests := []struct {
+		name          string
+		input         any
+		expected      string
+		expectedError bool
+		mockError     error
+	}{
+		{
+			name:          "Normal case",
+			input:         map[string]any{"key": "value"},
+			expected:      `{"key":"value"}`,
+			expectedError: false,
+			mockError:     nil,
+		},
+		{
+			name:          "Empty map",
+			input:         map[string]any{},
+			expected:      `{}`,
+			expectedError: false,
+			mockError:     nil,
+		},
+		{
+			name:          "error on json encode",
+			input:         make(chan int), // channel is not json encodable
+			expected:      "",
+			expectedError: true,
+			mockError:     nil,
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			// Arrange
+			w := httptest.NewRecorder()
+			ctx := NewContext(w, nil).(*context)
+
+			// Mock
+			patches := gomonkey.NewPatches()
+			defer patches.Reset()
+
+			// Act
+			err := ctx.JsonSerialize(it.input)
+			resBody := w.Body.String()
+
+			// Assert
+			if it.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			// check
+			if it.expected != "" {
+				assert.Equal(t, resBody[:len(resBody)-1], it.expected[:len(resBody)-1])
+			}
+		})
+	}
+}
+
+func TestContext_Reset(t *testing.T) {
+	// Arrange
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/test", nil)
+	ctx := NewContext(w, req).(*context)
+
+	// Set values to ensure they are reset
+	ctx.Set("test", "value")
+	ctx.SetPath("/old")
+	ctx.SetQueryParam(url.Values{"old": {"value"}})
+
+	newW := httptest.NewRecorder()
+	newReq := httptest.NewRequest("POST", "/new", nil)
+
+	// Act
+	ctx.Reset(newW, newReq)
+
+	// Assert
+	// check request
+	assert.Equal(t, newReq, ctx.request)
+	// check response
+	assert.NotEqual(t, w, ctx.response)
+	// check path
+	assert.Equal(t, "", ctx.GetPath())
+	// check query params
+	_, ok := ctx.QueryParam("old")
+	assert.False(t, ok)
+	// check store
+	_, ok = ctx.Get("test")
+	assert.False(t, ok)
 }
