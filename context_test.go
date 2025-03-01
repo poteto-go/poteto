@@ -1,7 +1,6 @@
 package poteto
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"net"
@@ -217,149 +216,91 @@ func TestContext_RealIP(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestGetLogger(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/example.com", strings.NewReader(userJSON))
-	ctx := NewContext(w, req).(*context)
+func TestContext_Logger(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
+	logger := func(msg string) {}
 
-	logger := func(msg string) {
-		return
-	}
+	// Act
 	ctx.SetLogger(logger)
+	result := ctx.Logger()
 
-	if ctx.Logger() == nil {
-		t.Errorf("Unmatched")
-	}
+	// Assert
+	assert.NotNil(t, result)
 }
 
-func TestBindOnContext(t *testing.T) {
+func TestContext_Bind(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 	type User struct {
 		Name string `json:"name"`
-		Mail string `json:"mail"`
 	}
+	user := User{}
 
-	tests := []struct {
-		name     string
-		body     []byte
-		worked   bool
-		expected User
-	}{
-		{
-			"Test Normal Case",
-			[]byte(`{"name":"test", "mail":"example"}`),
-			true,
-			User{Name: "test", Mail: "example"},
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.binder),
+		"Bind",
+		func(_ *binder, c Context, obj any) error {
+			assert.Equal(t, c, ctx)
+			assert.Equal(t, &user, obj)
+			return nil
 		},
-	}
+	)
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			user := User{}
+	// Act
+	err := ctx.Bind(&user)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HeaderContentType, constant.ApplicationJson)
-			ctx := NewContext(w, req).(*context)
-
-			err := ctx.Bind(&user)
-			if err != nil {
-				if it.worked {
-					t.Errorf("unexpected error")
-				}
-				return
-			}
-
-			if !it.worked {
-				t.Errorf("unexpected not error")
-				return
-			}
-
-			if it.expected.Name != user.Name {
-				t.Errorf("Unmatched")
-			}
-
-			if it.expected.Mail != user.Mail {
-				t.Errorf("Unmatched")
-			}
-		})
-	}
+	// Assert
+	assert.Nil(t, err)
 }
 
-func TestBindWithValidateOnContext(t *testing.T) {
+func TestContext_BindWithValidate(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 	type User struct {
 		Name string `json:"name"`
-		Mail string `json:"mail" validate:"required,email"`
 	}
+	user := User{}
 
-	tests := []struct {
-		name     string
-		body     []byte
-		worked   bool
-		expected User
-	}{
-		{
-			"test ok validate",
-			[]byte(`{"name":"test", "mail":"test@example.com"}`),
-			true, User{Name: "test", Mail: "test@example.com"},
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.binder),
+		"BindWithValidate",
+		func(_ *binder, c Context, obj any) error {
+			assert.Equal(t, c, ctx)
+			assert.Equal(t, &user, obj)
+			return nil
 		},
-		{
-			"test fatal validate",
-			[]byte(`{"name":"test", "mail":"example"}`),
-			false, User{},
-		},
-		{
-			"test fatal bind",
-			[]byte(`{"name":"test",, "mail":"example"}`),
-			false, User{},
-		},
-	}
+	)
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			user := User{}
+	// Act
+	err := ctx.BindWithValidate(&user)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/example.com", bytes.NewBufferString(string(it.body)))
-			req.Header.Set(constant.HEADER_CONTENT_TYPE, constant.APPLICATION_JSON)
-			ctx := NewContext(w, req).(*context)
-
-			err := ctx.BindWithValidate(&user)
-			if err != nil {
-				if it.worked {
-					t.Errorf("unexpected error")
-				}
-				return
-			}
-
-			if !it.worked {
-				t.Errorf("unexpected not error")
-				return
-			}
-
-			if it.expected.Name != user.Name {
-				t.Errorf("Unmatched")
-			}
-
-			if it.expected.Mail != user.Mail {
-				t.Errorf("Unmatched")
-			}
-		})
-	}
+	// Assert
+	assert.Nil(t, err)
 }
 
-func TestNoContent(t *testing.T) {
+func TestContext_NoContent(t *testing.T) {
+	// Arrange
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
 	ctx := NewContext(w, req).(*context)
 
+	// Act
 	ctx.NoContent()
 
-	if w.Result().Status != "204 No Content" {
-		t.Errorf("Unmatched")
-	}
+	// Assert
+	assert.Equal(t, w.Code, http.StatusNoContent)
 }
 
-func TestSetAndGet(t *testing.T) {
+func TestContext_SetAndGet(t *testing.T) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
 	ctx := NewContext(w, req).(*context)
@@ -390,16 +331,15 @@ func TestSetAndGet(t *testing.T) {
 			ctx.Set(test.key, test.value)
 
 			val, ok := ctx.Get(test.key)
-			if !ok || val != test.value {
-				t.Errorf("Unmatched")
-			}
+			assert.Equal(t, ok, true)
+			assert.Equal(t, test.value, val)
 		}()
 	}
 
 	wg.Wait()
 }
 
-func TestRequestId(t *testing.T) {
+func TestContext_RequestId(t *testing.T) {
 	tests := []struct {
 		name     string
 		header   string

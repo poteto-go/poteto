@@ -8,6 +8,7 @@
 
 ### ルール
 - 一個下の階層をなるべく、モック化することでテストコードの冗長化を少なくする
+- モック化した関数については、呼び出し引数のチェックだけを行うようにする
    - EX)
    以下の関数に関してテストを書く場合。
    ```go
@@ -25,9 +26,18 @@
      reflect.TypeOf(ctx.httpParams),
      "GetParam",
      func(_ *httpParam, paramType, key string) (string, bool) {
+       assert.Equal(t, paramType, expectedParmType)
+       assert.Equal(t, key, expectedKey)
        return "test", true
      },
    )
+
+   // Act
+   result, ok := ctx.GetParam("test")
+
+   // Assert
+   assert.Equal(t, ok, true)
+   assert.Equl(t, result, "test")
    ```
 
 - テストにおける関数名に関するルール
