@@ -10,7 +10,7 @@ import (
 )
 
 // TODO: error status code
-var (
+const (
 	rpcVersion               = "2.0"
 	rpcErrorStatus           = -32700
 	rpcErrorStatusBadRequest = -32600
