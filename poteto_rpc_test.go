@@ -112,7 +112,7 @@ func TestPotetoJSONRPCAdapter(t *testing.T) {
 		{
 			"Test POST body nil",
 			httptest.NewRequest("POST", "/test", nil),
-			-32600,
+			-32700,
 		},
 		{
 			"Test POST body not version right",
