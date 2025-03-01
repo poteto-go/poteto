@@ -344,10 +344,6 @@ func (ctx *context) GetRemoteIP() (string, error) {
 	return ctx.ipHandler.GetRemoteIP(ctx)
 }
 
-func (ctx *context) RegisterTrustIPRange(ranges *net.IPNet) {
-	ctx.ipHandler.RegisterTrustIPRange(ranges)
-}
-
 func (ctx *context) GetIPFromXFFHeader() (string, error) {
 	return ctx.ipHandler.GetIPFromXFFHeader(ctx)
 }
@@ -356,12 +352,17 @@ func (ctx *context) RealIP() (string, error) {
 	return ctx.ipHandler.RealIP(ctx)
 }
 
+func (ctx *context) RegisterTrustIPRange(ranges *net.IPNet) {
+	ctx.ipHandler.RegisterTrustIPRange(ranges)
+}
+
 // using same binder
 func (ctx *context) Reset(w http.ResponseWriter, r *http.Request) {
 	ctx.request = r
 	ctx.response = NewResponse(w)
 	ctx.httpParams = NewHttpParam()
 	ctx.store = make(map[string]any)
+	ctx.path = ""
 }
 
 func (ctx *context) SetLogger(logger any) {

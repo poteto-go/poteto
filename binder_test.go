@@ -98,7 +98,7 @@ func TestBinder_Bind(t *testing.T) {
 	})
 }
 
-func TestBindWithValidate(t *testing.T) {
+func TestBinder_BindWithValidate(t *testing.T) {
 	binder := NewBinder()
 
 	type User struct {
