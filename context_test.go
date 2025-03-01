@@ -1,8 +1,10 @@
 package poteto
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +13,6 @@ import (
 	"sync"
 	"testing"
 
-	"bou.ke/monkey"
 	"github.com/agiledragon/gomonkey"
 	"github.com/google/uuid"
 	"github.com/poteto-go/poteto/constant"
@@ -382,98 +383,244 @@ func TestContext_RequestId(t *testing.T) {
 			}
 
 			requestId := ctx.RequestId()
-			if requestId != it.expected {
-				if it.header != "" || it.stored != "" {
-					t.Errorf("Unmatched")
-				}
+			if it.header != "" || it.stored != "" {
+				assert.Equal(t, requestId, it.expected)
 			}
 
 			// random case
 			if it.header == "" && it.stored == "" {
-				if requestId == it.expected {
-					t.Errorf("Unmatched")
-				}
+				assert.NotEqual(t, requestId, it.expected)
 			}
 		})
 	}
-}
 
-func TestRequestIdErrorGenInUuid(t *testing.T) {
-	defer monkey.UnpatchAll()
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/test", nil)
-	ctx := NewContext(w, req).(*context)
+	t.Run("Error on uuid()", func(t *testing.T) {
+		// Arrange
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/test", nil)
+		ctx := NewContext(w, req).(*context)
 
-	monkey.Patch(uuid.NewRandom, func() (uuid.UUID, error) {
-		return uuid.UUID{}, errors.New("error")
-	})
+		// Mock
+		patches := gomonkey.NewPatches()
+		defer patches.Reset()
 
-	val := ctx.RequestId()
-	if val != "" {
-		t.Errorf("Unmatched")
-	}
-}
-
-func TestDebugParam(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/test/", nil)
-	ctx := NewContext(w, req)
-
-	ctx.SetParam(constant.ParamTypePath, ParamUnit{"user_id", "1"})
-	ctx.SetParam(constant.ParamTypePath, ParamUnit{"player_id", "2"})
-	ctx.SetParam(constant.ParamTypeQuery, ParamUnit{"user_id", "1"})
-
-	expected := `{"path":{"player_id":"2","user_id":"1"},"query":{"user_id":"1"}}`
-
-	debugParam, _ := ctx.DebugParam()
-	if debugParam != expected {
-		t.Errorf(
-			"Unmatched actual(%s) -> expected(%s)",
-			debugParam,
-			expected,
+		patches.ApplyFunc(
+			uuid.NewRandom,
+			func() (uuid.UUID, error) {
+				return uuid.UUID{}, errors.New("error")
+			},
 		)
-	}
+
+		// Act
+		requestId := ctx.RequestId()
+
+		// Assert
+		assert.Equal(t, "", requestId)
+	})
 }
 
-func TestJsonDeserialize(t *testing.T) {
-	defer monkey.UnpatchAll()
+func TestContext_DebugParam(t *testing.T) {
 	tests := []struct {
-		name string
-		err  any
+		name            string
+		setup           func(ctx Context)
+		expectedResult  string
+		expectedSuccess bool
+		mockError       error
 	}{
-		{"UnmarshalTypeError", &json.UnmarshalTypeError{}},
-		{"SyntaxError", &json.SyntaxError{}},
+		{
+			name: "Normal case with path and query parameters",
+			setup: func(ctx Context) {
+				ctx.SetParam(constant.ParamTypePath, ParamUnit{"user_id", "1"})
+				ctx.SetParam(constant.ParamTypePath, ParamUnit{"player_id", "2"})
+				ctx.SetParam(constant.ParamTypeQuery, ParamUnit{"user_id", "3"})
+			},
+			expectedResult:  `{"path":{"player_id":"2","user_id":"1"},"query":{"user_id":"3"}}`,
+			expectedSuccess: true,
+			mockError:       nil,
+		},
+		{
+			name: "Empty parameters",
+			setup: func(ctx Context) {
+			},
+			expectedResult:  `{"path":{},"query":{}}`,
+			expectedSuccess: true,
+			mockError:       nil,
+		},
+		{
+			name: "only path parameter",
+			setup: func(ctx Context) {
+				ctx.SetParam(constant.ParamTypePath, ParamUnit{"player_id", "2"})
+			},
+			expectedResult:  `{"path":{"player_id":"2"},"query":{}}`,
+			expectedSuccess: true,
+			mockError:       nil,
+		},
+		{
+			name: "only query parameter",
+			setup: func(ctx Context) {
+				ctx.SetParam(constant.ParamTypeQuery, ParamUnit{"user_id", "3"})
+			},
+			expectedResult:  `{"path":{},"query":{"user_id":"3"}}`,
+			expectedSuccess: true,
+			mockError:       nil,
+		},
+		{
+			name: "occur serialize error",
+			setup: func(ctx Context) {
+				ctx.SetParam(constant.ParamTypeQuery, ParamUnit{"user_id", "3"})
+			},
+			expectedResult:  "",
+			expectedSuccess: false,
+			mockError:       errors.New("json serialize error"),
+		},
 	}
-
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/test/", nil)
-	ctx := NewContext(w, req)
 
 	for _, it := range tests {
 		t.Run(it.name, func(t *testing.T) {
-			monkey.Patch((*json.Decoder).Decode, func(d *json.Decoder, v any) error {
-				return it.err.(error)
-			})
+			// Arrange
+			ctx := NewContext(nil, nil).(*context)
+			// call setup function
+			it.setup(ctx)
 
-			if err := ctx.JsonDeserialize(&user{}); err == nil {
-				t.Errorf("Not occur error: %v", err)
-			}
+			// Mock
+			patches := gomonkey.NewPatches()
+			defer patches.Reset()
+
+			patches.ApplyMethod(
+				reflect.TypeOf(ctx.httpParams),
+				"JsonSerialize",
+				func(_ *httpParam) ([]byte, error) {
+					if it.mockError != nil {
+						return []byte{}, it.mockError
+					}
+
+					return []byte(it.expectedResult), nil
+				},
+			)
+
+			// Act
+			result, ok := ctx.DebugParam()
+
+			// Assert
+			assert.Equal(t, it.expectedResult, result)
+			assert.Equal(t, it.expectedSuccess, ok)
 		})
 	}
 }
 
-func TestRegisterTrustIPRangeInContext(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/test/", nil)
-	ctx := NewContext(w, req)
+func TestContext_JsonDeserialize(t *testing.T) {
+	// Define a struct for test
+	type User struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	tests := []struct {
+		name         string
+		body         []byte
+		contentType  string
+		expectedUser User
+	}{
+		{
+			name:         "Valid JSON",
+			body:         []byte(`{"name": "John Doe", "age": 30}`),
+			contentType:  constant.ApplicationJson,
+			expectedUser: User{Name: "John Doe", Age: 30},
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			// Arrange
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewBuffer(it.body))
+			req.Header.Set(constant.HeaderContentType, it.contentType)
+			ctx := NewContext(w, req).(*context)
+
+			// Mock
+			patches := gomonkey.NewPatches()
+			defer patches.Reset()
+
+			// Mock io.ReadAll
+			patches.ApplyFunc(
+				json.NewDecoder,
+				func(_ io.Reader) *json.Decoder {
+					return &json.Decoder{}
+				},
+			)
+
+			// Mock (*json.Decoder).Decode
+			patches.ApplyMethod(
+				reflect.TypeOf(&json.Decoder{}),
+				"Decode",
+				func(_ *json.Decoder, v any) error {
+					assert.Equal(t, &it.expectedUser, v)
+					return nil
+				},
+			)
+
+			// Act
+			user := &User{}
+			err := ctx.JsonDeserialize(user)
+
+			// Assert
+			assert.Nil(t, err)
+		})
+	}
+}
+
+func TestContest_RegisterTrustIPRange(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 	_, ipnet, _ := net.ParseCIDR("10.0.0.0/24")
+
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.ipHandler),
+		"RegisterTrustIPRange",
+		func(_ *ipHandler, ranges *net.IPNet) {
+			// Assert
+			assert.Equal(t, ipnet, ranges)
+		},
+	)
+
+	// Act
 	ctx.RegisterTrustIPRange(ipnet)
 }
 
-func TestJSONRPCError(t *testing.T) {
+func TestContext_JSONRPCError(t *testing.T) {
+	// Arrange
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
 	ctx := NewContext(w, req).(*context)
 
-	ctx.JSONRPCError(200, "message", "data", 10)
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx),
+		"JSON",
+		func(_ *context, code int, value any) error {
+			// Assert
+			assert.Equal(t, code, http.StatusOK)
+			assert.Equal(t, value, map[string]any{
+				"result":  nil,
+				"jsonrpc": "2.0",
+				"error": map[string]any{
+					"code":    code,
+					"message": "message",
+					"data":    "data",
+				},
+				"id": 10,
+			})
+			return nil
+		},
+	)
+
+	// Act
+	ctx.JSONRPCError(http.StatusOK, "message", "data", 10)
 }

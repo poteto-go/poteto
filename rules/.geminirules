@@ -4,41 +4,43 @@
 - 関数名を指定して、指示を出した場合には、その関数に関する内容だけを記述すること
 
 ### 目指すこと
-条件分岐を高める
+- テスト対象の関数内でのif分岐を高める
+   - モック化した関数の中身まで、if分岐を考える必要はないので、注意してください。
 
 ### ルール
 - 一個下の階層をなるべく、モック化することでテストコードの冗長化を少なくする
-- モック化した関数については、呼び出し引数のチェックだけを行うようにする
-   - EX)
-   以下の関数に関してテストを書く場合。
-   ```go
-   func (ctx *context) QueryParam(key string) (string, bool) {
-     return ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
-   }
-   ```
-   `ctx.httpParams`の`GetParam`をモック化する。
-   ```go
-   // Mock
-   patches := gomonkey.NewPatches()
-   defer patches.Reset()
+   - 関数のモックはなるべく単純なケースのみを作成してください。
+   - モック化した関数については、呼び出し引数のチェックだけを行うようにする
+     - EX)
+     以下の関数に関してテストを書く場合。
+     ```go
+     func (ctx *context) QueryParam(key string) (string, bool) {
+       return ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
+     }
+     ```
+     `ctx.httpParams`の`GetParam`をモック化する。
+     ```go
+     // Mock
+     patches := gomonkey.NewPatches()
+     defer patches.Reset()
 
-   patches.ApplyMethod(
-     reflect.TypeOf(ctx.httpParams),
-     "GetParam",
-     func(_ *httpParam, paramType, key string) (string, bool) {
-       assert.Equal(t, paramType, expectedParmType)
-       assert.Equal(t, key, expectedKey)
-       return "test", true
-     },
-   )
+     patches.ApplyMethod(
+       reflect.TypeOf(ctx.httpParams),
+       "GetParam",
+       func(_ *httpParam, paramType, key string) (string, bool) {
+         assert.Equal(t, paramType, expectedParmType)
+         assert.Equal(t, key, expectedKey)
+         return "test", true
+       },
+     )
 
-   // Act
-   result, ok := ctx.GetParam("test")
+     // Act
+     result, ok := ctx.GetParam("test")
 
-   // Assert
-   assert.Equal(t, ok, true)
-   assert.Equl(t, result, "test")
-   ```
+     // Assert
+     assert.Equal(t, ok, true)
+     assert.Equl(t, result, "test")
+     ```
 
 - テストにおける関数名に関するルール
    - テスト対象が関数の場合
