@@ -1,0 +1,32 @@
+## 単体テスト
+
+### 目指すこと
+条件分岐を高める
+
+### ルール
+- 一個下の階層をなるべく、モック化することでテストコードの冗長化を少なくする
+   - EX)
+   以下の関数に関してテストを書く場合。
+   ```go
+   func (ctx *context) QueryParam(key string) (string, bool) {
+     return ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
+   }
+   ```
+   `ctx.httpParams`の`GetParam`をモック化する。
+   ```go
+   // Mock
+   patches := gomonkey.NewPatches()
+   defer patches.Reset()
+
+   patches.ApplyMethod(
+     reflect.TypeOf(ctx.httpParams),
+     "GetParam",
+     func(_ *httpParam, paramType, key string) (string, bool) {
+       return "test", true
+     },
+   )
+   ```
+
+### ライブラリ
+- github.com/stretchr/testify/assert
+- github.com/agiledragon/gomonkey

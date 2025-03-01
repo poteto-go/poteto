@@ -7,16 +7,28 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
 
 	"bou.ke/monkey"
+	"github.com/agiledragon/gomonkey"
 	"github.com/google/uuid"
 	"github.com/poteto-go/poteto/constant"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestJSON(t *testing.T) {
+func TestNewContext(t *testing.T) {
+	// Act
+	ctx := NewContext(nil, nil)
+
+	// Assert
+	assert.NotNil(t, ctx)
+}
+
+func TestContext_JSON(t *testing.T) {
+	// Arrange
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
 	context := NewContext(w, req).(*context)
@@ -37,73 +49,42 @@ func TestJSON(t *testing.T) {
 
 	for _, it := range tests {
 		t.Run(it.name, func(t *testing.T) {
+			// Act
 			context.JSON(it.code, it.val)
-			if body := w.Body.String(); body[0:27] != it.expected[0:27] {
-				t.Errorf("FATAL: context json")
-			}
+			resBody := w.Body.String()
+			header := w.Header()
+			status := w.Code
 
-			if header := w.Header(); header[constant.HeaderContentType][0] != constant.ApplicationJson {
-				t.Errorf("FATAL: wrong content-type")
-			}
+			// Assert
+			assert.Equal(t, it.expected[:len(resBody)-1], resBody[:len(resBody)-1])
+			assert.Equal(t, constant.ApplicationJson, header.Get(constant.HeaderContentType))
+			assert.Equal(t, it.code, status)
 		})
 	}
 }
 
-func TestQueryParam(t *testing.T) {
-	tests := []struct {
-		name      string
-		url       string
-		key1      string
-		expected1 string
-		key2      string
-		expected2 string
-	}{
-		{
-			"Test valid case",
-			"/example.com?hello=world",
-			"hello",
-			"world",
-			"unknown",
-			"",
+func TestContext_QueryParam(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
+
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.httpParams),
+		"GetParam",
+		func(_ *httpParam, paramType, key string) (string, bool) {
+			return "test", true
 		},
-		{
-			"Test nothing param case",
-			"/example.com?hello",
-			"hello",
-			"",
-			"unknown",
-			"",
-		},
-		{
-			"too many param case",
-			"/example.com?a=a&b=b&c=c&d=d&e=e&f=f#g=g&h=h&i=i&j=j&k=k&l=l&m=m&n=n&o=o&p=p&q=q&r=r&s=s&t=t&u=u&v=v&w=w&x=x&y=y&z=z&a1=a1&b1=b1&c1=c1&d1=d1&e1=e1&f1=f1&g1=g1&h1=h1",
-			"a",
-			"",
-			"unknown",
-			"",
-		},
-	}
+	)
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", it.url, nil)
-			ctx := NewContext(w, req).(*context)
+	// Act
+	result, ok := ctx.QueryParam("test")
 
-			queryParams := req.URL.Query()
-			ctx.SetQueryParam(queryParams)
-
-			queryParam1, _ := ctx.QueryParam(it.key1)
-			if queryParam1 != it.expected1 {
-				t.Errorf("Cannot Get Query Param")
-			}
-
-			queryParam2, _ := ctx.QueryParam(it.key2)
-			if queryParam2 != it.expected2 {
-				t.Errorf("Cannot Get nil If Unknown key")
-			}
-		})
-	}
+	// Assert
+	assert.Equal(t, "test", result)
+	assert.Equal(t, true, ok)
 }
 
 func TestPathParam(t *testing.T) {
