@@ -27,6 +27,12 @@
    )
    ```
 
+- テストにおける関数名に関するルール
+   - テスト対象が関数の場合
+     - Test関数名の名前にする
+   - テスト対象がインスタンスメソッドの場合
+     - Testインスタンス名_関数名にする
+
 ### ライブラリ
 - github.com/stretchr/testify/assert
 - github.com/agiledragon/gomonkey

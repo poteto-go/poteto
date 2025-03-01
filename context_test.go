@@ -118,7 +118,6 @@ func TestPathParam(t *testing.T) {
 				t.Errorf("unmatched")
 			}
 		})
-
 	}
 }
 
