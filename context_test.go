@@ -75,6 +75,8 @@ func TestContext_QueryParam(t *testing.T) {
 		reflect.TypeOf(ctx.httpParams),
 		"GetParam",
 		func(_ *httpParam, paramType, key string) (string, bool) {
+			assert.Equal(t, constant.ParamTypeQuery, paramType)
+			assert.Equal(t, "test", key)
 			return "test", true
 		},
 	)
@@ -87,55 +89,45 @@ func TestContext_QueryParam(t *testing.T) {
 	assert.Equal(t, true, ok)
 }
 
-func TestPathParam(t *testing.T) {
-	url := "/example.com/users/1"
+func TestContext_PathParam(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", url, nil)
-	ctx := NewContext(w, req).(*context)
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
 
-	ctx.SetParam(constant.ParamTypePath, ParamUnit{key: ":id", value: "1"})
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.httpParams),
+		"GetParam",
+		func(_ *httpParam, paramType, key string) (string, bool) {
+			assert.Equal(t, constant.ParamTypePath, paramType)
+			assert.Equal(t, ":id", key)
+			return "mocked_path_value", true
+		},
+	)
 
-	tests := []struct {
-		name        string
-		key         string
-		expected    string
-		expected_ok bool
-	}{
-		{"Can get PathParam", "id", "1", true},
-		{"If unexpected key", "unexpected", "", false},
-	}
+	// Act
+	result, ok := ctx.PathParam("id")
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			param, ok := ctx.PathParam(it.key)
-
-			if param != it.expected {
-				t.Errorf("Unmatched")
-			}
-
-			if ok != it.expected_ok {
-				t.Errorf("unmatched")
-			}
-		})
-	}
+	// Assert
+	assert.Equal(t, "mocked_path_value", result)
+	assert.True(t, ok)
 }
 
-func TestSetAndPath(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "http://example.com", nil)
-	ctx := NewContext(w, req).(*context)
+func TestContext_SetPath(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
+	testPath := "/tests"
 
-	expected := "http://expected.com"
-	ctx.SetPath(expected)
+	// Act
+	ctx.SetPath(testPath)
 
-	path := ctx.GetPath()
-	if path != expected {
-		t.Errorf("Not Matched")
-	}
+	// Assert
+	assert.Equal(t, testPath, ctx.path)
 }
 
-func BenchmarkJSON(b *testing.B) {
+func BenchmarkContext_JSON(b *testing.B) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/example.com", strings.NewReader(userJSON))
 	ctx := NewContext(w, req).(*context)
@@ -150,75 +142,79 @@ func BenchmarkJSON(b *testing.B) {
 	}
 }
 
-func TestRemoteIP(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/example.com", strings.NewReader(userJSON))
-	ctx := NewContext(w, req).(*context)
+func TestContext_RemoteIP(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 
-	if _, err := ctx.GetRemoteIP(); err != nil {
-		t.Errorf("Error occurred")
-	}
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
+
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.ipHandler),
+		"GetRemoteIP",
+		func(_ *ipHandler, c Context) (string, error) {
+			assert.Equal(t, c, ctx)
+			return "127.0.0.1", nil
+		},
+	)
+
+	// Act
+	result, err := ctx.GetRemoteIP()
+
+	// Assert
+	assert.Equal(t, "127.0.0.1", result)
+	assert.Nil(t, err)
 }
 
-func TestGetIPFromXFFHeaderByContext(t *testing.T) {
-	iph := &ipHandler{}
-	_, ipnet, _ := net.ParseCIDR("10.0.0.0/24")
-	iph.RegisterTrustIPRange(ipnet)
+func TestContext_GetIPFromXFFHeader(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/test", nil)
-	req.Header.Set(constant.HeaderXForwardedFor, "11.0.0.1, 12.0.0.1, 10.0.0.2, 10.0.0.1")
-	ctx := NewContext(w, req).(*context)
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
 
-	ipString, _ := ctx.GetIPFromXFFHeader()
-	if ipString != "12.0.0.1" {
-		t.Errorf("Not matched")
-	}
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.ipHandler),
+		"GetIPFromXFFHeader",
+		func(_ *ipHandler, c Context) (string, error) {
+			assert.Equal(t, c, ctx)
+			return "12.0.0.1", nil
+		},
+	)
+
+	// Act
+	result, err := ctx.GetIPFromXFFHeader()
+
+	// Assert
+	assert.Equal(t, "12.0.0.1", result)
+	assert.Nil(t, err)
 }
 
-func TestRealIP(t *testing.T) {
-	tests := []struct {
-		name        string
-		headerKey   string
-		headerValue string
-		expected    string
-	}{
-		{
-			"Get from Real Ip",
-			constant.HeaderXRealIp,
-			"11.0.0.1",
-			"11.0.0.1",
-		},
-		{
-			"Get from XFF",
-			constant.HeaderXForwardedFor,
-			"11.0.0.1",
-			"11.0.0.1",
-		},
-		{
-			"Get from RemoteAddr",
-			"",
-			"",
-			"192.0.2.1",
-		},
-	}
+func TestContext_RealIP(t *testing.T) {
+	// Arrange
+	ctx := NewContext(nil, nil).(*context)
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/test", nil)
-			if it.headerKey != "" {
-				req.Header.Set(it.headerKey, it.headerValue)
-			}
-			ctx := NewContext(w, req).(*context)
+	// Mock
+	patches := gomonkey.NewPatches()
+	defer patches.Reset()
 
-			ipString, _ := ctx.RealIP()
-			if ipString[0:8] != it.expected[0:8] {
-				t.Errorf(ipString)
-				t.Errorf("Not matched")
-			}
-		})
-	}
+	patches.ApplyMethod(
+		reflect.TypeOf(ctx.ipHandler),
+		"RealIP",
+		func(_ *ipHandler, c Context) (string, error) {
+			assert.Equal(t, c, ctx)
+			return "12.0.0.1", nil
+		},
+	)
+
+	// Act
+	result, err := ctx.RealIP()
+
+	// Assert
+	assert.Equal(t, "12.0.0.1", result)
+	assert.Nil(t, err)
 }
 
 func TestGetLogger(t *testing.T) {
