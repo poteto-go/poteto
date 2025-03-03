@@ -4,9 +4,9 @@ go 1.23.5
 
 require (
 	bou.ke/monkey v1.0.2
+	github.com/agiledragon/gomonkey v2.0.2+incompatible
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/fatih/color v1.18.0
-	github.com/go-playground/assert/v2 v2.2.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/goccy/go-json v0.10.5
 	github.com/goccy/go-yaml v1.15.23
@@ -14,12 +14,11 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/harakeishi/gats v0.0.0-20230219034858-055bc915842a
 	github.com/poteto-go/tslice v0.4.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	github.com/ybbus/jsonrpc/v3 v3.1.6
 )
 
 require (
-	github.com/agiledragon/gomonkey v2.0.2+incompatible // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
