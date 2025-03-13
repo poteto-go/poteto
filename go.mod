@@ -14,7 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/harakeishi/gats v0.0.0-20230219034858-055bc915842a
 	github.com/poteto-go/tslice v0.4.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	github.com/ybbus/jsonrpc/v3 v3.1.6
 )
 
