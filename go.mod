@@ -2,6 +2,8 @@ module github.com/poteto-go/poteto
 
 go 1.23.5
 
+toolchain go1.24.1
+
 require (
 	bou.ke/monkey v1.0.2
 	github.com/agiledragon/gomonkey v2.0.2+incompatible
@@ -9,7 +11,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/goccy/go-json v0.10.5
-	github.com/goccy/go-yaml v1.15.23
+	github.com/goccy/go-yaml v1.16.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/harakeishi/gats v0.0.0-20230219034858-055bc915842a
