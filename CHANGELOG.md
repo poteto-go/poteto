@@ -2,6 +2,15 @@
 
 ## 1.6.X
 
+### 1.6.2
+
+@2025/03/21
+
+- REF: ut rework & check bug is not occur by @poteto0 in #268
+- Bump github.com/goccy/go-yaml from 1.15.23 to 1.16.0 in #267
+- Bump golang.org/x/net from 0.34.0 to 0.36.0 in #264
+- Bump github.com/stretchr/testify from 1.8.4 to 1.10.0 in #263
+
 ### 1.6.1
 
 - GEMINI: add `rules/.geminirules` by @poteto0 in #261
@@ -48,6 +57,7 @@
 - FEAT: `poteto.Play` for ut w/o server by @poteto0 in #226
 
 KEYNOTE:
+
 ```go
 func main() {
 	p := poteto.New()
