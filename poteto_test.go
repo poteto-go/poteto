@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"bou.ke/monkey"
+	"github.com/goccy/go-json"
 	"github.com/poteto-go/poteto/constant"
 )
 
@@ -321,5 +322,223 @@ func TestChain(t *testing.T) {
 
 	if hv2 != "world2" {
 		t.Error("unmatched")
+	}
+}
+
+func TestServeHTTP(t *testing.T) {
+	p := New()
+	p.POST("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "post-handle",
+			"value":  "none",
+		})
+	})
+
+	p.GET("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "get-handle",
+			"value":  "none",
+		})
+	})
+
+	p.PUT("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "put-handle",
+			"value":  "none",
+		})
+	})
+
+	p.PATCH("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "patch-handle",
+			"value":  "none",
+		})
+	})
+
+	p.CONNECT("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "connect-handle",
+			"value":  "none",
+		})
+	})
+
+	p.DELETE("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "delete-handle",
+			"value":  "none",
+		})
+	})
+
+	p.HEAD("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "head-handle",
+			"value":  "none",
+		})
+	})
+
+	p.OPTIONS("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "options-handle",
+			"value":  "none",
+		})
+	})
+
+	p.TRACE("/users", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "trace-handle",
+			"value":  "none",
+		})
+	})
+
+	p.GET("/users/:id", func(ctx Context) error {
+		if qp, ok := ctx.QueryParam("query"); ok {
+			return ctx.JSON(http.StatusOK, map[string]string{
+				"result": "query",
+				"value":  qp,
+			})
+		}
+
+		if pp, ok := ctx.PathParam("id"); ok {
+			return ctx.JSON(http.StatusOK, map[string]string{
+				"result": "path",
+				"value":  pp,
+			})
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "handle",
+			"value":  "none",
+		})
+	})
+
+	tests := []struct {
+		name   string
+		method string
+		url    string
+		code   uint
+		result string
+		value  string
+	}{
+		{
+			"can handle get method",
+			http.MethodGet,
+			"/users",
+			http.StatusOK,
+			"get-handle",
+			"none",
+		},
+		{
+			"can handle post method",
+			http.MethodPost,
+			"/users",
+			http.StatusOK,
+			"post-handle",
+			"none",
+		},
+		{
+			"can handle put method",
+			http.MethodPut,
+			"/users",
+			http.StatusOK,
+			"put-handle",
+			"none",
+		},
+		{
+			"can handle patch method",
+			http.MethodPatch,
+			"/users",
+			http.StatusOK,
+			"patch-handle",
+			"none",
+		},
+		{
+			"can handle delete method",
+			http.MethodDelete,
+			"/users",
+			http.StatusOK,
+			"delete-handle",
+			"none",
+		},
+		{
+			"can handle head method",
+			http.MethodHead,
+			"/users",
+			http.StatusOK,
+			"head-handle",
+			"none",
+		},
+		{
+			"can handle options method",
+			http.MethodOptions,
+			"/users",
+			http.StatusOK,
+			"options-handle",
+			"none",
+		},
+		{
+			"can handle trace method",
+			http.MethodTrace,
+			"/users",
+			http.StatusOK,
+			"trace-handle",
+			"none",
+		},
+		{
+			"can get path param",
+			http.MethodGet,
+			"/users/1",
+			http.StatusOK,
+			"path",
+			"1",
+		},
+		{
+			"can get query param",
+			http.MethodGet,
+			"/users/1?query=1",
+			http.StatusOK,
+			"query",
+			"1",
+		},
+		{
+			"can get query param with param",
+			http.MethodGet,
+			"/users/1?query=1",
+			http.StatusOK,
+			"query",
+			"1",
+		},
+		{
+			"can handle not found",
+			http.MethodGet,
+			"/unexpected",
+			http.StatusNotFound,
+			"query",
+			"1",
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			result := map[string]string{}
+			response := p.Play(it.method, it.url)
+
+			if response.Code != int(it.code) {
+				t.Errorf("unmatched code %d != %d", response.Code, it.code)
+			}
+
+			if response.Code == http.StatusNotFound {
+				return
+			}
+
+			json.Unmarshal(response.Body.Bytes(), &result)
+
+			if result["result"] != it.result {
+				t.Errorf("unmatched result %s != %s", result["result"], it.result)
+			}
+
+			if result["value"] != it.value {
+				t.Errorf("unmatched value %s != %s", result["value"], it.value)
+			}
+		})
 	}
 }
