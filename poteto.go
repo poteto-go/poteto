@@ -27,7 +27,14 @@ type Poteto interface {
 	Register(middlewares ...MiddlewareFunc)
 	Combine(pattern string, middlewares ...MiddlewareFunc) *middlewareTree
 	SetLogger(logger any)
+
 	Leaf(basePath string, handler LeafHandler)
+
+	// Carve out a portion of the app with an API; provide an interface similar to Leaf.
+	Api(basePath string, handler LeafHandler) *poteto
+
+	// add router & middleware tree from api (Poteto)
+	AddApi(api Poteto)
 
 	// workflow is a function that is executed when the server starts | end
 	// - constant.StartUpWorkflow: "startUp"
@@ -377,6 +384,19 @@ func (p *poteto) Leaf(basePath string, yield LeafHandler) {
 	leaf := NewLeaf(p, basePath)
 
 	yield(leaf)
+}
+
+func (p *poteto) Api(basePath string, handler LeafHandler) *poteto {
+	api := New().(*poteto)
+
+	api.Leaf(basePath, handler)
+
+	return api
+}
+
+func (p *poteto) AddApi(api Poteto) {
+	// add router
+	// add middleware tree
 }
 
 func (p *poteto) GET(path string, handler HandlerFunc) error {
