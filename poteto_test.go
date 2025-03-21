@@ -327,16 +327,24 @@ func TestChain(t *testing.T) {
 
 func TestServeHTTP(t *testing.T) {
 	p := New()
-	p.POST("/users", func(ctx Context) error {
+
+	p.GET("/users", func(ctx Context) error {
+		if qp, ok := ctx.QueryParam("query"); ok {
+			return ctx.JSON(http.StatusOK, map[string]string{
+				"result": "query",
+				"value":  qp,
+			})
+		}
+
 		return ctx.JSON(http.StatusOK, map[string]string{
-			"result": "post-handle",
+			"result": "get-handle",
 			"value":  "none",
 		})
 	})
 
-	p.GET("/users", func(ctx Context) error {
+	p.POST("/users", func(ctx Context) error {
 		return ctx.JSON(http.StatusOK, map[string]string{
-			"result": "get-handle",
+			"result": "post-handle",
 			"value":  "none",
 		})
 	})
@@ -391,17 +399,17 @@ func TestServeHTTP(t *testing.T) {
 	})
 
 	p.GET("/users/:id", func(ctx Context) error {
-		if qp, ok := ctx.QueryParam("query"); ok {
-			return ctx.JSON(http.StatusOK, map[string]string{
-				"result": "query",
-				"value":  qp,
-			})
-		}
-
 		if pp, ok := ctx.PathParam("id"); ok {
 			return ctx.JSON(http.StatusOK, map[string]string{
 				"result": "path",
 				"value":  pp,
+			})
+		}
+
+		if qp, ok := ctx.QueryParam("query"); ok {
+			return ctx.JSON(http.StatusOK, map[string]string{
+				"result": "query",
+				"value":  qp,
 			})
 		}
 
@@ -494,17 +502,17 @@ func TestServeHTTP(t *testing.T) {
 		{
 			"can get query param",
 			http.MethodGet,
-			"/users/1?query=1",
+			"/users?query=1",
 			http.StatusOK,
 			"query",
 			"1",
 		},
 		{
-			"can get query param with param",
+			"can get path param with query",
 			http.MethodGet,
 			"/users/1?query=1",
 			http.StatusOK,
-			"query",
+			"path",
 			"1",
 		},
 		{
