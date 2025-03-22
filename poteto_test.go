@@ -12,6 +12,7 @@ import (
 	"bou.ke/monkey"
 	"github.com/goccy/go-json"
 	"github.com/poteto-go/poteto/constant"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddRouteToPoteto(t *testing.T) {
@@ -549,4 +550,29 @@ func TestServeHTTP(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPoteto_Api(t *testing.T) {
+	p := New()
+
+	p.GET("/", func(ctx Context) error {
+		return ctx.JSON(http.StatusOK, map[string]string{
+			"result": "success",
+		})
+	})
+
+	api := Api("/users", func(userApi Leaf) {
+		userApi.GET("/:id", func(ctx Context) error {
+			return ctx.JSON(http.StatusOK, map[string]string{
+				"result": "success",
+			})
+		})
+	})
+
+	p.AddApi(api)
+
+	assert.Equal(t, p.Check(http.MethodGet, "/"), true)
+	assert.Equal(t, p.Check(http.MethodPost, "/"), false)
+	assert.Equal(t, p.Check(http.MethodGet, "/users"), false)
+	assert.Equal(t, p.Check(http.MethodGet, "/users/1"), true)
 }

@@ -18,6 +18,9 @@ import (
 )
 
 type Poteto interface {
+	Router() *router
+	MiddlewareTree() *middlewareTree
+
 	// If requested, call this
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 	Run(addr string) error
@@ -27,7 +30,14 @@ type Poteto interface {
 	Register(middlewares ...MiddlewareFunc)
 	Combine(pattern string, middlewares ...MiddlewareFunc) *middlewareTree
 	SetLogger(logger any)
+
+	// Leaf makes router group
+	// You can make your router clear
+	// with middlewares
 	Leaf(basePath string, handler LeafHandler)
+
+	// add router & middleware tree from api (Poteto)
+	AddApi(api Poteto) error
 
 	// workflow is a function that is executed when the server starts | end
 	// - constant.StartUpWorkflow: "startUp"
@@ -100,6 +110,14 @@ type poteto struct {
 	potetoWorkflows PotetoWorkflows
 }
 
+func Api(basePath string, handler LeafHandler) *poteto {
+	api := New().(*poteto)
+
+	api.Leaf(basePath, handler)
+
+	return api
+}
+
 func New() Poteto {
 	var DefaultPotetoOption PotetoOption
 	if err := env.Parse(&DefaultPotetoOption); err != nil {
@@ -123,6 +141,14 @@ func NewWithOption(option PotetoOption) Poteto {
 		option:          option,
 		potetoWorkflows: NewPotetoWorkflows(),
 	}
+}
+
+func (p *poteto) Router() *router {
+	return p.router.(*router)
+}
+
+func (p *poteto) MiddlewareTree() *middlewareTree {
+	return p.middlewareTree.(*middlewareTree)
 }
 
 // Cashed context | NewContext
@@ -370,13 +396,43 @@ func (p *poteto) RegisterWorkflow(workflowType string, priority uint, workflow W
 	p.potetoWorkflows.(*potetoWorkflows).RegisterWorkflow(workflowType, priority, workflow)
 }
 
-// Leaf makes router group
-// You can make your router clear
-// with middlewares
 func (p *poteto) Leaf(basePath string, yield LeafHandler) {
 	leaf := NewLeaf(p, basePath)
 
 	yield(leaf)
+}
+
+var allHttpMethods = []string{
+	http.MethodGet,
+	http.MethodPost,
+	http.MethodPut,
+	http.MethodPatch,
+	http.MethodDelete,
+	http.MethodHead,
+	http.MethodOptions,
+	http.MethodTrace,
+	http.MethodConnect,
+}
+
+func (p *poteto) AddApi(api Poteto) error {
+	// add router
+	for _, method := range allHttpMethods {
+		linearRouter := api.Router().DFS(method)
+
+		for _, lr := range linearRouter {
+			if err := p.router.add(method, lr.path, lr.handler); err != nil {
+				return err
+			}
+		}
+	}
+
+	// add middleware tree
+	linearMiddleware := api.MiddlewareTree().DFS()
+	for _, lm := range linearMiddleware {
+		p.middlewareTree.Insert(lm.path, lm.handler)
+	}
+
+	return nil
 }
 
 func (p *poteto) GET(path string, handler HandlerFunc) error {

@@ -2,6 +2,8 @@ package poteto
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewRoute(t *testing.T) {
@@ -48,47 +50,34 @@ func TestInsertAndSearch(t *testing.T) {
 	}
 }
 
-func BenchmarkInsertAndSearch(b *testing.B) {
-	urls := []string{
-		"/",
-		"/example.com/v1/users/find/poteto",
-		"/example.com/v1/users/find/potato",
-		"/example.com/v1/users/find/jagaimo",
-		"/example.com/v1/users/create/poteto",
-		"/example.com/v1/users/create/potato",
-		"/example.com/v1/users/create/jagaimo",
-		"/example.com/v1/members/find/poteto",
-		"/example.com/v1/members/find/potato",
-		"/example.com/v1/members/find/jagaimo",
-		"/example.com/v1/members/create/poteto",
-		"/example.com/v1/members/create/potato",
-		"/example.com/v1/members/create/jagaimo",
-		"/example.com/v2/users/find/poteto",
-		"/example.com/v2/users/find/potato",
-		"/example.com/v2/users/find/jagaimo",
-		"/example.com/v2/users/create/poteto",
-		"/example.com/v2/users/create/potato",
-		"/example.com/v2/users/create/jagaimo",
-		"/example.com/v2/members/find/poteto",
-		"/example.com/v2/members/find/potato",
-		"/example.com/v2/members/find/jagaimo",
-		"/example.com/v2/members/create/poteto",
-		"/example.com/v2/members/create/potato",
-		"/example.com/v2/members/create/jagaimo",
-	}
-
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
-		// Insert
+func TestRoute_DFS(t *testing.T) {
+	t.Run("nil case", func(t *testing.T) {
+		// Arrange
 		route := NewRoute().(*route)
-		for _, url := range urls {
-			route.Insert(url, nil)
-		}
 
-		// Search
-		for _, url := range urls {
-			route.Search(url)
+		// Act
+		results := route.DFS()
+
+		// Assert
+		assert.Equal(t, 0, len(results))
+	})
+
+	t.Run("normal case", func(t *testing.T) {
+		// Arrange
+		mockFunc := func(ctx Context) error {
+			return ctx.JSON(200, nil)
 		}
-	}
+		route := NewRoute().(*route)
+		route.Insert("/", mockFunc)
+		route.Insert("/users/greet/nil", nil)
+		route.Insert("/users/:id", mockFunc)
+		route.Insert("/users/:id/name", mockFunc)
+		route.Insert("/users/social/followers", mockFunc)
+
+		// Act
+		results := route.DFS()
+
+		// Assert
+		assert.Equal(t, 4, len(results))
+	})
 }

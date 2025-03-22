@@ -11,10 +11,24 @@ import (
  * Refer, if once found.
  */
 
+type middlewareLinear struct {
+	path    string
+	handler MiddlewareFunc
+}
+
 type MiddlewareTree interface {
 	SearchMiddlewares(pattern string) []MiddlewareFunc
 	Insert(pattern string, middlewares ...MiddlewareFunc) *middlewareTree
 	Register(middlewares ...MiddlewareFunc)
+
+	// DFS route & return linearRouter
+	//
+	// []{
+	//   path: string,
+	//   handler: MiddlewareFunc,
+	// }
+	DFS() []middlewareLinear
+	dfs(node *middlewareTree, path string, visited *map[string]struct{}, results *[]middlewareLinear)
 }
 
 type middlewareTree struct {
@@ -98,4 +112,49 @@ func (mt *middlewareTree) Insert(pattern string, middlewares ...MiddlewareFunc) 
 
 func (mt *middlewareTree) Register(middlewares ...MiddlewareFunc) {
 	mt.middlewares = append(mt.middlewares, middlewares...)
+}
+
+func (mt *middlewareTree) DFS() []middlewareLinear {
+	results := make([]middlewareLinear, 0)
+	visited := map[string]struct{}{}
+	mt.dfs(mt, "", &visited, &results)
+	return results
+}
+
+func (mt *middlewareTree) dfs(
+	node *middlewareTree,
+	path string,
+	visited *map[string]struct{},
+	results *[]middlewareLinear,
+) {
+	if node == nil {
+		return
+	}
+
+	if _, ok := (*visited)[path]; ok {
+		return
+	}
+
+	(*visited)[path] = struct{}{}
+
+	for _, middleware := range node.middlewares {
+		if middleware == nil {
+			continue
+		}
+
+		*results = append(*results, middlewareLinear{
+			path:    path,
+			handler: middleware,
+		})
+	}
+
+	for key, child := range node.children {
+		nextPath := path + "/" + key
+		mt.dfs(
+			child.(*middlewareTree),
+			nextPath,
+			visited,
+			results,
+		)
+	}
 }

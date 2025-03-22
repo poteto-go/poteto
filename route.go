@@ -9,9 +9,23 @@ import (
 	"github.com/poteto-go/poteto/utils"
 )
 
+type routeLinear struct {
+	path    string
+	handler HandlerFunc
+}
+
 type Route interface {
 	Search(path string) (*route, []ParamUnit)
 	Insert(path string, handler HandlerFunc)
+
+	// DFS route & return linearRouter
+	//
+	// []{
+	//   path: string,
+	//   handler: HandlerFunc,
+	// }
+	DFS() []routeLinear
+	dfs(node *route, path string, visited *map[string]struct{}, results *[]routeLinear)
 
 	GetHandler() HandlerFunc
 }
@@ -113,6 +127,42 @@ func (r *route) Insert(path string, handler HandlerFunc) {
 	}
 
 	currentRoute.handler = handler
+}
+
+func (r *route) DFS() []routeLinear {
+	results := make([]routeLinear, 0)
+	visited := map[string]struct{}{}
+	r.dfs(r, "", &visited, &results)
+	return results
+}
+
+func (r *route) dfs(
+	node *route,
+	path string,
+	visited *map[string]struct{},
+	results *[]routeLinear,
+) {
+	if node == nil {
+		return
+	}
+
+	if _, ok := (*visited)[path]; ok {
+		return
+	}
+
+	(*visited)[path] = struct{}{}
+
+	if node.handler != nil {
+		*results = append(*results, routeLinear{
+			path:    path,
+			handler: node.handler,
+		})
+	}
+
+	for key, child := range node.children {
+		nextPath := path + "/" + key
+		r.dfs(child.(*route), nextPath, visited, results)
+	}
 }
 
 func hasParamPrefix(param string) bool {
