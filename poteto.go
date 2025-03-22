@@ -19,6 +19,7 @@ import (
 
 type Poteto interface {
 	Router() *router
+	MiddlewareTree() *middlewareTree
 
 	// If requested, call this
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
@@ -136,6 +137,10 @@ func NewWithOption(option PotetoOption) Poteto {
 
 func (p *poteto) Router() *router {
 	return p.router.(*router)
+}
+
+func (p *poteto) MiddlewareTree() *middlewareTree {
+	return p.middlewareTree.(*middlewareTree)
 }
 
 // Cashed context | NewContext
@@ -417,12 +422,16 @@ func (p *poteto) AddApi(api Poteto) {
 	for _, method := range allHttpMethods {
 		linearRouter := api.Router().DFS(method)
 
-		for _, route := range linearRouter {
-			p.router.add(method, route.path, route.handler)
+		for _, lr := range linearRouter {
+			p.router.add(method, lr.path, lr.handler)
 		}
 	}
 
 	// add middleware tree
+	linearMiddleware := api.MiddlewareTree().DFS()
+	for _, lm := range linearMiddleware {
+		p.middlewareTree.Insert(lm.path, lm.handler)
+	}
 }
 
 func (p *poteto) GET(path string, handler HandlerFunc) error {
