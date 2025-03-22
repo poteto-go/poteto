@@ -51,20 +51,33 @@ func TestInsertAndSearch(t *testing.T) {
 }
 
 func TestRoute_DFS(t *testing.T) {
-	// Arrange
-	mockFunc := func(ctx Context) error {
-		return ctx.JSON(200, nil)
-	}
-	route := NewRoute().(*route)
-	route.Insert("/", mockFunc)
-	route.Insert("/users/greet/nil", nil)
-	route.Insert("/users/:id", mockFunc)
-	route.Insert("/users/:id/name", mockFunc)
-	route.Insert("/users/social/followers", mockFunc)
+	t.Run("nil case", func(t *testing.T) {
+		// Arrange
+		route := NewRoute().(*route)
 
-	// Act
-	results := route.DFS()
+		// Act
+		results := route.DFS()
 
-	// Assert
-	assert.Equal(t, 4, len(results))
+		// Assert
+		assert.Equal(t, 0, len(results))
+	})
+
+	t.Run("normal case", func(t *testing.T) {
+		// Arrange
+		mockFunc := func(ctx Context) error {
+			return ctx.JSON(200, nil)
+		}
+		route := NewRoute().(*route)
+		route.Insert("/", mockFunc)
+		route.Insert("/users/greet/nil", nil)
+		route.Insert("/users/:id", mockFunc)
+		route.Insert("/users/:id/name", mockFunc)
+		route.Insert("/users/social/followers", mockFunc)
+
+		// Act
+		results := route.DFS()
+
+		// Assert
+		assert.Equal(t, 4, len(results))
+	})
 }
