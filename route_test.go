@@ -2,6 +2,8 @@ package poteto
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewRoute(t *testing.T) {
@@ -46,4 +48,23 @@ func TestInsertAndSearch(t *testing.T) {
 			route.Search(it.arg)
 		})
 	}
+}
+
+func TestDFS(t *testing.T) {
+	// Arrange
+	mockFunc := func(ctx Context) error {
+		return ctx.JSON(200, nil)
+	}
+	route := NewRoute().(*route)
+	route.Insert("/", mockFunc)
+	route.Insert("/users/greet/nil", nil)
+	route.Insert("/users/:id", mockFunc)
+	route.Insert("/users/:id/name", mockFunc)
+	route.Insert("/users/social/followers", mockFunc)
+
+	// Act
+	results := route.DFS()
+
+	// Assert
+	assert.Equal(t, 4, len(results))
 }

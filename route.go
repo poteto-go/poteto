@@ -17,7 +17,7 @@ type Route interface {
 	Search(path string) (*route, []ParamUnit)
 	Insert(path string, handler HandlerFunc)
 
-	DFS(path string) []routeLinear
+	DFS() []routeLinear
 	dfs(node *route, path string, visited *map[string]struct{}, results *[]routeLinear)
 
 	GetHandler() HandlerFunc
@@ -122,10 +122,10 @@ func (r *route) Insert(path string, handler HandlerFunc) {
 	currentRoute.handler = handler
 }
 
-func (r *route) DFS(path string) []routeLinear {
+func (r *route) DFS() []routeLinear {
 	results := make([]routeLinear, 0)
 	visited := map[string]struct{}{}
-	r.dfs(r, path, &visited, &results)
+	r.dfs(r, "", &visited, &results)
 	return results
 }
 
@@ -153,7 +153,7 @@ func (r *route) dfs(
 	}
 
 	for key, child := range node.children {
-		nextPath := key + path
+		nextPath := path + "/" + key
 		r.dfs(child.(*route), nextPath, visited, results)
 	}
 }
