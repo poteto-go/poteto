@@ -1,6 +1,10 @@
 package poteto
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestInsertAndSearchMiddlewares(t *testing.T) {
 	mg := NewMiddlewareTree()
@@ -25,4 +29,24 @@ func TestInsertAndSearchMiddlewares(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMiddlewareTree_DFS(t *testing.T) {
+	// Arrange
+	mockFunc := func(next HandlerFunc) HandlerFunc {
+		return func(ctx Context) error {
+			return next(ctx)
+		}
+	}
+
+	tree := NewMiddlewareTree()
+	tree.Insert("/users", mockFunc)
+	tree.Insert("/users/hello", mockFunc, mockFunc)
+	tree.Insert("/users/hello/world", nil)
+
+	// Act
+	results := tree.DFS()
+
+	// Assert
+	assert.Equal(t, 3, len(results))
 }

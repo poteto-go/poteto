@@ -13,6 +13,7 @@ type routeLinear struct {
 	path    string
 	handler HandlerFunc
 }
+
 type Route interface {
 	Search(path string) (*route, []ParamUnit)
 	Insert(path string, handler HandlerFunc)

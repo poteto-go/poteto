@@ -50,7 +50,7 @@ func TestInsertAndSearch(t *testing.T) {
 	}
 }
 
-func TestDFS(t *testing.T) {
+func TestRoute_DFS(t *testing.T) {
 	// Arrange
 	mockFunc := func(ctx Context) error {
 		return ctx.JSON(200, nil)
