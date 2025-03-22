@@ -1,11 +1,3 @@
----
-name: "Pull request"
-about: for contributors, thank you :)
-title: ""
-labels: ""
-assignees: ""
----
-
 ## Check
 
 - [ ] I've checked pass linter \* required
