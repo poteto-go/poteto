@@ -18,6 +18,8 @@ import (
 )
 
 type Poteto interface {
+	Router() *router
+
 	// If requested, call this
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 	Run(addr string) error
@@ -130,6 +132,10 @@ func NewWithOption(option PotetoOption) Poteto {
 		option:          option,
 		potetoWorkflows: NewPotetoWorkflows(),
 	}
+}
+
+func (p *poteto) Router() *router {
+	return p.router.(*router)
 }
 
 // Cashed context | NewContext
@@ -394,8 +400,28 @@ func (p *poteto) Api(basePath string, handler LeafHandler) *poteto {
 	return api
 }
 
+var allHttpMethods = []string{
+	http.MethodGet,
+	http.MethodPost,
+	http.MethodPut,
+	http.MethodPatch,
+	http.MethodDelete,
+	http.MethodHead,
+	http.MethodOptions,
+	http.MethodTrace,
+	http.MethodConnect,
+}
+
 func (p *poteto) AddApi(api Poteto) {
 	// add router
+	for _, method := range allHttpMethods {
+		linearRouter := api.Router().DFS(method)
+
+		for _, route := range linearRouter {
+			p.router.add(method, route.path, route.handler)
+		}
+	}
+
 	// add middleware tree
 }
 
