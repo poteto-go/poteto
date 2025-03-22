@@ -81,6 +81,14 @@ type Router interface {
 	*/
 	CONNECT(path string, handler HandlerFunc) error
 
+	// DFS route & return linearRouter by method
+	//
+	// []{
+	//   path: string,
+	//   handler: HandlerFunc,
+	// }
+	DFS(method string) []routeLinear
+
 	GetRoutesByMethod(method string) *route
 }
 
@@ -180,6 +188,15 @@ func (r *router) TRACE(path string, handler HandlerFunc) error {
 
 func (r *router) CONNECT(path string, handler HandlerFunc) error {
 	return r.add(http.MethodConnect, path, handler)
+}
+
+func (r *router) DFS(method string) []routeLinear {
+	routes := r.GetRoutesByMethod(method)
+	if routes == nil {
+		return []routeLinear{}
+	}
+
+	return routes.DFS()
 }
 
 func (r *router) GetRoutesByMethod(method string) *route {
