@@ -1,5 +1,32 @@
 # 1.x.x
 
+## 1.7.X
+
+@2025/03/23 ~
+
+### 1.7.0
+
+@2025/03/23
+
+- FEAT: `Poteto.AddApi(Poteto)` add router & middlewareTree from `Poteto` by @poteto0 in #274
+
+```go
+p := poteto.New()
+
+userApi := poteto.Api("/users", func(leaf Leaf) {
+  p.GET("/", <handler>)
+})
+
+p.AddApi(userApi)
+```
+
+- FEAT: `Api(string, LeafHandler) *poteto` with basePath Poteto by @poteto0 in #274
+- CHORE: split benchmark test by @poteto0 in #274
+- DOC: readme rework by @poteto0 in #277
+- POL: add security policy by @poteto0 in #277
+- CHORE: issue template rework by @poteto0 in #277
+- CHORE: create pr template by @poteto0 in #277
+
 ## 1.6.X
 
 ### 1.6.3
