@@ -36,9 +36,6 @@ type Poteto interface {
 	// with middlewares
 	Leaf(basePath string, handler LeafHandler)
 
-	// Carve out a portion of the app with an API; provide an interface similar to Leaf.
-	Api(basePath string, handler LeafHandler) *poteto
-
 	// add router & middleware tree from api (Poteto)
 	AddApi(api Poteto)
 
@@ -111,6 +108,14 @@ type poteto struct {
 	Server          http.Server
 	Listener        net.Listener
 	potetoWorkflows PotetoWorkflows
+}
+
+func Api(basePath string, handler LeafHandler) *poteto {
+	api := New().(*poteto)
+
+	api.Leaf(basePath, handler)
+
+	return api
 }
 
 func New() Poteto {
@@ -395,14 +400,6 @@ func (p *poteto) Leaf(basePath string, yield LeafHandler) {
 	leaf := NewLeaf(p, basePath)
 
 	yield(leaf)
-}
-
-func (p *poteto) Api(basePath string, handler LeafHandler) *poteto {
-	api := New().(*poteto)
-
-	api.Leaf(basePath, handler)
-
-	return api
 }
 
 var allHttpMethods = []string{

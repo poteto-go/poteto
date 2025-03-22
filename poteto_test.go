@@ -561,7 +561,7 @@ func TestPoteto_Api(t *testing.T) {
 		})
 	})
 
-	api := p.Api("/users", func(userApi Leaf) {
+	api := Api("/users", func(userApi Leaf) {
 		userApi.GET("/:id", func(ctx Context) error {
 			return ctx.JSON(http.StatusOK, map[string]string{
 				"result": "success",
