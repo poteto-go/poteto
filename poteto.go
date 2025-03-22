@@ -420,7 +420,8 @@ func (p *poteto) AddApi(api Poteto) {
 		linearRouter := api.Router().DFS(method)
 
 		for _, lr := range linearRouter {
-			p.router.add(method, lr.path, lr.handler)
+			err := p.router.add(method, lr.path, lr.handler)
+			panic(err)
 		}
 	}
 
