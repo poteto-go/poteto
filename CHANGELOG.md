@@ -2,6 +2,12 @@
 
 ## 1.6.X
 
+### 1.6.3
+
+@2025/03/22
+
+- VULNS: Bump github.com/golang-jwt/jwt/v5 from 5.2.1 to 5.2.2 in #271
+
 ### 1.6.2
 
 @2025/03/21
