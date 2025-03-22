@@ -31,6 +31,9 @@ type Poteto interface {
 	Combine(pattern string, middlewares ...MiddlewareFunc) *middlewareTree
 	SetLogger(logger any)
 
+	// Leaf makes router group
+	// You can make your router clear
+	// with middlewares
 	Leaf(basePath string, handler LeafHandler)
 
 	// Carve out a portion of the app with an API; provide an interface similar to Leaf.
@@ -388,9 +391,6 @@ func (p *poteto) RegisterWorkflow(workflowType string, priority uint, workflow W
 	p.potetoWorkflows.(*potetoWorkflows).RegisterWorkflow(workflowType, priority, workflow)
 }
 
-// Leaf makes router group
-// You can make your router clear
-// with middlewares
 func (p *poteto) Leaf(basePath string, yield LeafHandler) {
 	leaf := NewLeaf(p, basePath)
 
