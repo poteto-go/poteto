@@ -37,7 +37,7 @@ type Poteto interface {
 	Leaf(basePath string, handler LeafHandler)
 
 	// add router & middleware tree from api (Poteto)
-	AddApi(api Poteto)
+	AddApi(api Poteto) error
 
 	// workflow is a function that is executed when the server starts | end
 	// - constant.StartUpWorkflow: "startUp"
@@ -414,14 +414,15 @@ var allHttpMethods = []string{
 	http.MethodConnect,
 }
 
-func (p *poteto) AddApi(api Poteto) {
+func (p *poteto) AddApi(api Poteto) error {
 	// add router
 	for _, method := range allHttpMethods {
 		linearRouter := api.Router().DFS(method)
 
 		for _, lr := range linearRouter {
-			err := p.router.add(method, lr.path, lr.handler)
-			panic(err)
+			if err := p.router.add(method, lr.path, lr.handler); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -430,6 +431,8 @@ func (p *poteto) AddApi(api Poteto) {
 	for _, lm := range linearMiddleware {
 		p.middlewareTree.Insert(lm.path, lm.handler)
 	}
+
+	return nil
 }
 
 func (p *poteto) GET(path string, handler HandlerFunc) error {
