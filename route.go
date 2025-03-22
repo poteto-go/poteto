@@ -17,6 +17,12 @@ type Route interface {
 	Search(path string) (*route, []ParamUnit)
 	Insert(path string, handler HandlerFunc)
 
+	// DFS route & return linearRouter
+	//
+	// []{
+	//   path: string,
+	//   handler: HandlerFunc,
+	// }
 	DFS() []routeLinear
 	dfs(node *route, path string, visited *map[string]struct{}, results *[]routeLinear)
 
