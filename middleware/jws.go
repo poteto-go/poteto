@@ -10,7 +10,7 @@ import (
 	"github.com/poteto-go/poteto/constant"
 )
 
-type potetoJWSConfig struct {
+type PotetoJWSConfig struct {
 	AuthScheme string
 	SignMethod string
 	SignKey    any
@@ -18,12 +18,12 @@ type potetoJWSConfig struct {
 	ClaimsFunc func(c poteto.Context) jwt.Claims
 }
 
-type PotetoJWSConfig interface {
+type IPotetoJWSConfig interface {
 	KeyFunc(token *jwt.Token) (any, error)
 	ParseToken(ctx poteto.Context, auth string) (any, error)
 }
 
-var DefaultJWSConfig = &potetoJWSConfig{
+var DefaultJWSConfig = &PotetoJWSConfig{
 	AuthScheme: constant.AuthScheme,
 	SignMethod: constant.AlgorithmHS256,
 	ContextKey: "user",
@@ -32,14 +32,7 @@ var DefaultJWSConfig = &potetoJWSConfig{
 	},
 }
 
-func NewPotetoJWSConfig(contextKey string, signKey any) PotetoJWSConfig {
-	cfg := DefaultJWSConfig
-	cfg.ContextKey = contextKey
-	cfg.SignKey = signKey
-	return cfg
-}
-
-func (cfg *potetoJWSConfig) KeyFunc(token *jwt.Token) (any, error) {
+func (cfg *PotetoJWSConfig) KeyFunc(token *jwt.Token) (any, error) {
 	if token.Method.Alg() != cfg.SignMethod {
 		return nil, errors.New("unexpected jwt signing method: " + cfg.SignMethod)
 	}
@@ -51,7 +44,7 @@ func (cfg *potetoJWSConfig) KeyFunc(token *jwt.Token) (any, error) {
 	return cfg.SignKey, nil
 }
 
-func (cfg *potetoJWSConfig) ParseToken(ctx poteto.Context, auth string) (any, error) {
+func (cfg *PotetoJWSConfig) ParseToken(ctx poteto.Context, auth string) (any, error) {
 	token, err := jwt.ParseWithClaims(auth, cfg.ClaimsFunc(ctx), cfg.KeyFunc)
 	if err != nil {
 		return nil, err
@@ -62,8 +55,8 @@ func (cfg *potetoJWSConfig) ParseToken(ctx poteto.Context, auth string) (any, er
 	return token, nil
 }
 
-func JWSWithConfig(cfg PotetoJWSConfig) poteto.MiddlewareFunc {
-	config := cfg.(*potetoJWSConfig)
+func JWSWithConfig(cfg IPotetoJWSConfig) poteto.MiddlewareFunc {
+	config := cfg.(*PotetoJWSConfig)
 	if config.SignKey == nil {
 		panic(config.SignKey)
 	}
