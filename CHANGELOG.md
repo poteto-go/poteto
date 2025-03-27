@@ -1,5 +1,32 @@
 # 1.x.x
 
+## 1.8.X
+
+@2025/03/28 ~
+
+### 1.8.0
+
+@2025/03/28 ~
+
+- FEAT: client oidc token & parse it (support google format)
+```go
+func main() {
+  p := poteto.New()
+  p.Register(
+    middleware.OidcWithConfig(
+      middleware.DefaultOidcConfig,
+    )
+  )
+
+  p.POST("/login", func(ctx poteto.Context) error {
+    var claims oidc.GoogleOidcClaims
+    token, _ := ctx.Get("googleToken")
+    json.Unmarshal(token.([]byte), &claims)
+  })
+}
+```
+- BUG: make jwsConfig public
+
 ## 1.7.X
 
 @2025/03/23 ~
