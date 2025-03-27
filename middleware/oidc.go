@@ -5,9 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/goccy/go-json"
 	"github.com/poteto-go/poteto"
-	"github.com/poteto-go/poteto/oidc"
 )
 
 type OidcConfig struct {
@@ -16,14 +14,14 @@ type OidcConfig struct {
 	ContextKey string `yaml:"context_key"`
 }
 
-var DefaultOidcConfig = &OidcConfig{
+var DefaultOidcConfig = OidcConfig{
 	Idp:        "google",
 	ContextKey: "googleToken",
 }
 
-// Oidc support google.com
+// Oidc set token -> context
 //
-// case google: => oidc.GoogleOidcClaims
+// You can decode with oidc.GoogleOidcClaims
 //
 //	func main() {
 //	  p := poteto.New()
@@ -33,12 +31,11 @@ var DefaultOidcConfig = &OidcConfig{
 //	    )
 //	  )
 //	  p.POST("/login", func(ctx poteto.Context) error {
+//	      var claims oidc.GoogleOidcClaims
 //	      token, _ := ctx.Get("googleToken")
-//	      claims := token.(oidc.GoogleOidcClaims)
+//	      json.Unmarshal(token.([]byte), &claims)
 //	   })
 //	}
-//
-// case other: => return []byte
 func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 	if cfg.ContextKey == "" {
 		cfg.ContextKey = DefaultOidcConfig.ContextKey
@@ -46,12 +43,6 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 
 	if cfg.Idp == "" {
 		cfg.Idp = DefaultOidcConfig.Idp
-	}
-
-	var claims any
-	switch cfg.Idp {
-	case "google":
-		claims = oidc.GoogleOidcClaims{}
 	}
 
 	return func(next poteto.HandlerFunc) poteto.HandlerFunc {
@@ -66,16 +57,7 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 				return err
 			}
 
-			// unmarshal
-			switch cfg.Idp {
-			case "google":
-				json.Unmarshal(token, &claims)
-				ctx.Set(cfg.ContextKey, claims)
-			default:
-				ctx.Set(cfg.ContextKey, token)
-				return next(ctx)
-			}
-
+			ctx.Set(cfg.ContextKey, token)
 			return next(ctx)
 		}
 	}
