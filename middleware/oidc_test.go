@@ -41,4 +41,27 @@ func TestMiddleware_OidcWithConfig(t *testing.T) {
 
 		assert.Equal(t, claims.Email, "test@exmaple.com")
 	})
+
+	t.Run("invalid token", func(t *testing.T) {
+		token := "invalid"
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		ctx := poteto.NewContext(w, req)
+
+		var claims oidc.GoogleOidcClaims
+		handler := func(ctx poteto.Context) error {
+			token, _ := ctx.Get("googleToken")
+			json.Unmarshal(token.([]byte), &claims)
+
+			return ctx.JSON(http.StatusOK, claims)
+		}
+		oidc_handler := oidcMiddleware(handler)
+
+		err := oidc_handler(ctx)
+
+		assert.NotNil(t, err)
+	})
 }
