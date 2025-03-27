@@ -38,36 +38,45 @@ func TestKeyFunc(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		config        potetoJWSConfig
+		config        PotetoJWSConfig
 		expectedErr   bool
 		expectSignKey []byte
 	}{
 		{
 			"Test valid token",
-			potetoJWSConfig{
+			PotetoJWSConfig{
 				SignMethod: constant.AlgorithmHS256,
 				ContextKey: "user",
 				SignKey:    []byte("secret"),
+				ClaimsFunc: func(c poteto.Context) jwt.Claims {
+					return jwt.MapClaims{}
+				},
 			},
 			false,
 			[]byte("secret"),
 		},
 		{
 			"Test not equal sign method",
-			potetoJWSConfig{
+			PotetoJWSConfig{
 				SignMethod: "SHA256",
 				ContextKey: "user",
-				SignKey:    []byte("secret"),
+				SignKey:    nil,
+				ClaimsFunc: func(c poteto.Context) jwt.Claims {
+					return jwt.MapClaims{}
+				},
 			},
 			true,
 			[]byte("secret"),
 		},
 		{
 			"Test nil sign key throw error",
-			potetoJWSConfig{
+			PotetoJWSConfig{
 				SignMethod: constant.AlgorithmHS256,
 				ContextKey: "user",
 				SignKey:    nil,
+				ClaimsFunc: func(c poteto.Context) jwt.Claims {
+					return jwt.MapClaims{}
+				},
 			},
 			true,
 			[]byte("secret"),
@@ -106,7 +115,15 @@ func TestKeyFunc(t *testing.T) {
 func TestParseJWSToken(t *testing.T) {
 	defer monkey.UnpatchAll()
 
-	config := NewPotetoJWSConfig("user", []byte("secret"))
+	config := &PotetoJWSConfig{
+		SignMethod: constant.AlgorithmHS256,
+		ContextKey: "user",
+		SignKey:    []byte("secret"),
+		ClaimsFunc: func(c poteto.Context) jwt.Claims {
+			return jwt.MapClaims{}
+		},
+	}
+
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/test", nil)
 	ctx := poteto.NewContext(w, req)
@@ -168,9 +185,14 @@ func TestParseJWSToken(t *testing.T) {
 }
 
 func TestJWSMiddleware(t *testing.T) {
-	jwsConfig := NewPotetoJWSConfig(
-		"user", []byte("secret"),
-	)
+	jwsConfig := &PotetoJWSConfig{
+		SignMethod: constant.AlgorithmHS256,
+		ContextKey: "user",
+		SignKey:    []byte("secret"),
+		ClaimsFunc: func(c poteto.Context) jwt.Claims {
+			return jwt.MapClaims{}
+		},
+	}
 
 	p := poteto.New()
 	p.Register(JWSWithConfig(jwsConfig))
