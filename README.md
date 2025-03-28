@@ -11,6 +11,9 @@ go get -u github.com/poteto-go/poteto@latest
 ```
 
 If you try latest experiment version
+
+https://github.com/poteto-go/poteto/blob/main/EXPERIMENT.md
+
 ```bash
 go get -u github.com/poteto-go/poteto@exp<version>
 ```
