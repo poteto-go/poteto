@@ -104,7 +104,10 @@ func verifyDecode(token, jwksUrl string, customVerify func(oidc.IdToken, string)
 	}
 
 	if customVerify != nil {
-		customVerify(idToken, jwksUrl)
+		err := customVerify(idToken, jwksUrl)
+		if err != nil {
+			return []byte(""), err
+		}
 	}
 
 	// decode payload
