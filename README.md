@@ -10,6 +10,14 @@ We have confirmed that it works with various versions: go@1.21.x, go@1.22.x, go@
 go get -u github.com/poteto-go/poteto@latest
 ```
 
+If you try latest experiment version
+
+https://github.com/poteto-go/poteto/blob/main/EXPERIMENT.md
+
+```bash
+go get -u github.com/poteto-go/poteto@exp<version>
+```
+
 ## Quick Start
 
 ```go
@@ -37,7 +45,7 @@ func main() {
 
 	p.AddApi(userApi)
 
-	p.Run()
+	p.Run("3000")
 }
 ```
 
