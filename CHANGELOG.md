@@ -2,11 +2,18 @@
 
 ## 1.8.X
 
+@2025/03/27 ~
+
+### 1.8.1
+
 @2025/03/28 ~
+
+- CHORE: add experiment version by @poteto0 in #286
+- CHORE: fix quickstart by @poteto0 in #286
 
 ### 1.8.0
 
-@2025/03/28 ~
+@2025/03/27 ~
 
 - FEAT: client oidc token & parse it (support google format)
 ```go
