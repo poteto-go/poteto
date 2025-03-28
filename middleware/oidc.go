@@ -21,10 +21,10 @@ import (
 )
 
 type OidcConfig struct {
-	// google
-	Idp          string                                           `yaml:"idp"`
-	ContextKey   string                                           `yaml:"context_key"`
-	JwksUrl      string                                           `yaml:"jwks_url"`
+	Idp        string `yaml:"idp"`
+	ContextKey string `yaml:"context_key"`
+	JwksUrl    string `yaml:"jwks_url"`
+	// you can set custom verify signature callback
 	CustomVerify func(idToken oidc.IdToken, jwksUrl string) error `yaml:"-"`
 }
 
