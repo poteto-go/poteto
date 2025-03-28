@@ -14,7 +14,7 @@ import (
 
 func TestMiddleware_OidcWithConfig(t *testing.T) {
 	oidcMiddleware := middleware.OidcWithConfig(
-		middleware.DefaultOidcConfig,
+		middleware.OidcWithoutVerifyConfig,
 	)
 
 	t.Run("valid token", func(t *testing.T) {
