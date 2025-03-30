@@ -31,15 +31,21 @@ var DefaultOidcConfig = OidcConfig{
 	CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
 }
 
-// Oidc set token -> context
+// Oidc verify signature by jwks url & set token -> context
 //
 // You can decode with oidc.GoogleOidcClaims
 //
 //	func main() {
 //	  p := poteto.New()
+//	  oidcConfig := middleware.OidcConfig {
+//	    Idp: "google",
+//	    ContextKey: "googleToken",
+//	    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+//	      CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
+//	  }
 //	  p.Register(
 //	    middleware.OidcWithConfig(
-//	      middleware.DefaultOidcConfig,
+//	      oidcConfig,
 //	    )
 //	  )
 //	  p.POST("/login", func(ctx poteto.Context) error {
