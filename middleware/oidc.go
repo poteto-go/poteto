@@ -25,21 +25,21 @@ type OidcConfig struct {
 	ContextKey string `yaml:"context_key"`
 	JwksUrl    string `yaml:"jwks_url"`
 	// you can set custom verify signature callback
-	CustomVerify func(idToken oidc.IdToken, jwksUrl string) error `yaml:"-"`
+	CustomVerifyTokenSignature func(idToken oidc.IdToken, jwksUrl string) error `yaml:"-"`
 }
 
 var OidcWithoutVerifyConfig = OidcConfig{
-	Idp:          "google",
-	ContextKey:   "googleToken",
-	JwksUrl:      "",
-	CustomVerify: nil,
+	Idp:                        "google",
+	ContextKey:                 "googleToken",
+	JwksUrl:                    "",
+	CustomVerifyTokenSignature: nil,
 }
 
 var DefaultOidcConfig = OidcConfig{
-	Idp:          "google",
-	ContextKey:   "googleToken",
-	JwksUrl:      "",
-	CustomVerify: verifyToken,
+	Idp:                        "google",
+	ContextKey:                 "googleToken",
+	JwksUrl:                    "",
+	CustomVerifyTokenSignature: DefaultVerifyTokenSignature,
 }
 
 // Oidc set token -> context
@@ -79,7 +79,7 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 				return err
 			}
 
-			token, err := verifyDecode(authValue, cfg.JwksUrl, cfg.CustomVerify)
+			token, err := verifyDecode(authValue, cfg.JwksUrl, cfg.CustomVerifyTokenSignature)
 			if err != nil {
 				return err
 			}
@@ -90,7 +90,7 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 	}
 }
 
-func verifyDecode(token, jwksUrl string, customVerify func(oidc.IdToken, string) error) ([]byte, error) {
+func verifyDecode(token, jwksUrl string, customVerifyTokenSignature func(oidc.IdToken, string) error) ([]byte, error) {
 	splitToken := strings.Split(token, ".")
 	if len(splitToken) != 3 {
 		return []byte(""), errors.New("invalid token")
@@ -103,8 +103,8 @@ func verifyDecode(token, jwksUrl string, customVerify func(oidc.IdToken, string)
 		RawSignature: splitToken[2],
 	}
 
-	if customVerify != nil {
-		err := customVerify(idToken, jwksUrl)
+	if customVerifyTokenSignature != nil {
+		err := customVerifyTokenSignature(idToken, jwksUrl)
 		if err != nil {
 			return []byte(""), err
 		}
@@ -132,7 +132,7 @@ func jwtDecodeSegment(raw string) ([]byte, error) {
 	return decoded, nil
 }
 
-func verifyToken(idToken oidc.IdToken, jwksUrl string) error {
+func DefaultVerifyTokenSignature(idToken oidc.IdToken, jwksUrl string) error {
 	// decode header
 	byteHeader, err := jwtDecodeSegment(idToken.RawHeader)
 	if err != nil {
