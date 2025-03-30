@@ -38,7 +38,8 @@ func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
 		return err
 	}
 
-	byteN, err := base64.RawURLEncoding.DecodeString(key.N)
+	// base64.RawURLEncoding.DecodeString(key.N)
+	byteN, err := utils.JwtUrlDecodeSegment(key.N)
 	if err != nil {
 		return err
 	}
@@ -57,7 +58,7 @@ func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
 	sha := sha256.New()
 	sha.Write([]byte(headerAndPayload))
 
-	decSignature, err := utils.JwtDecodeSegment(idToken.RawSignature)
+	decSignature, err := utils.JwtUrlDecodeSegment(idToken.RawSignature)
 	if err != nil {
 		return err
 	}
@@ -99,7 +100,7 @@ func getJwk(token IdToken, jwksUrl string) (jwk, error) {
 
 	foundKey, err := keys.find(token.Header.Kid)
 	if err != nil {
-		return jwk{}, err
+		return jwk{}, fmt.Errorf("jwks keys not found")
 	}
 
 	return foundKey, nil
