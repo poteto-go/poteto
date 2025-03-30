@@ -4,7 +4,8 @@
 
 ## Simple Web Framework of GoLang
 
-We have confirmed that it works with various versions: go@1.21.x, go@1.22.x, go@1.23.x
+![](https://img.shields.io/badge/go-1.23-lightblue)
+![](https://img.shields.io/badge/go-1.24-lightblue)
 
 ```bash
 go get -u github.com/poteto-go/poteto@latest
@@ -68,6 +69,39 @@ func main() {
 	res := p.Play(http.MethodGet, "/users")
 	resBodyStr := res.Body.String
 	// => {"id":"1","name":"tester"}
+}
+```
+
+## OIDC
+
+poteto provides easily oidc middleware.
+
+- verify signature
+- jwt schema (if idp google).
+
+```go
+func main() {
+  p := poteto.New()
+
+  oidcConfig := middleware.OidcConfig {
+    Idp: "google",
+    ContextKey: "googleToken",
+    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+    CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
+  }
+  p.Register(
+    middleware.OidcWithConfig(
+      oidcConfig,
+    )
+  )
+
+  p.POST("/login", func(ctx poteto.Context) error {
+      var claims oidc.GoogleOidcClaims
+      token, _ := ctx.Get("googleToken")
+      json.Unmarshal(token.([]byte), &claims)
+      ...
+      return ctx.JSON(200, map[string]string{"message": "success"})
+  })
 }
 ```
 
