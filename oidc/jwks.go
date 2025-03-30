@@ -3,7 +3,7 @@ package oidc
 import "errors"
 
 var JWKsUrls = map[string]string{
-	"google": "https://www.googleapis.com/oauth2/v1/certs",
+	"google": "https://www.googleapis.com/oauth2/v3/certs",
 }
 
 type jwk struct {
