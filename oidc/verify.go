@@ -7,20 +7,20 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"math/big"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
+
+	"github.com/poteto-go/poteto/utils"
 )
 
 // DefaultVerifyTokenSignature verifies the signature of an ID token using JWKS.
 func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
 	// decode header
-	byteHeader, err := jwtDecodeSegment(idToken.RawHeader)
+	byteHeader, err := utils.JwtDecodeSegment(idToken.RawHeader)
 	if err != nil {
 		return err
 	}
@@ -43,17 +43,9 @@ func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
 		return err
 	}
 
-	// 'e' is typically "AQAB" which is 65537
-	var exponent int
-	if key.E == "AQAB" || key.E == "" { // Default exponent if missing or standard
-		exponent = 65537
-	} else {
-		// Ensure E is base64url encoded before decoding
-		byteE, err := base64.RawURLEncoding.DecodeString(key.E)
-		if err != nil {
-			return fmt.Errorf("failed to decode exponent E: %w", err)
-		}
-		exponent = int(new(big.Int).SetBytes(byteE).Int64())
+	exponent, err := getExponentialFromKey(key.E)
+	if err != nil {
+		return err
 	}
 
 	pubKey := &rsa.PublicKey{
@@ -65,7 +57,7 @@ func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
 	sha := sha256.New()
 	sha.Write([]byte(headerAndPayload))
 
-	decSignature, err := base64.RawURLEncoding.DecodeString(idToken.RawSignature)
+	decSignature, err := utils.JwtDecodeSegment(idToken.RawSignature)
 	if err != nil {
 		return err
 	}
@@ -76,20 +68,6 @@ func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
 	}
 
 	return nil
-}
-
-// jwtDecodeSegment decodes JWT specific base64url encoding with padding.
-func jwtDecodeSegment(raw string) ([]byte, error) {
-	paddingLength := ((4 - len(raw)%4) % 4)
-	padding := strings.Repeat("=", paddingLength)
-	padded := strings.Join([]string{raw, padding}, "")
-
-	decoded, err := base64.StdEncoding.DecodeString(padded)
-	if err != nil {
-		return []byte(""), err
-	}
-
-	return decoded, nil
 }
 
 func getJwk(token IdToken, jwksUrl string) (jwk, error) {
@@ -127,18 +105,17 @@ func getJwk(token IdToken, jwksUrl string) (jwk, error) {
 	return foundKey, nil
 }
 
-func (keys jwks) find(kid string) (jwk, error) {
-	var foundKey jwk
-	for _, key := range keys.Keys {
-		if key.Kid == kid {
-			foundKey = key
-			break
-		}
+// 'e' is typically "AQAB" which is 65537
+func getExponentialFromKey(e string) (int, error) {
+	if e == "AQAB" || e == "" { // Default exponent if missing or standard
+		return 65537, nil
 	}
 
-	if foundKey != (jwk{}) {
-		return foundKey, nil
-	} else {
-		return jwk{}, errors.New("jwks keys not found")
+	// Ensure E is base64url encoded before decoding
+	byteE, err := base64.RawURLEncoding.DecodeString(e)
+	if err != nil {
+		return 0, fmt.Errorf("failed to decode exponent E: %w", err)
 	}
+
+	return int(new(big.Int).SetBytes(byteE).Int64()), nil
 }

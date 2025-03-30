@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"encoding/base64"
 	"errors"
 	"strings"
 
 	"github.com/poteto-go/poteto"
 	"github.com/poteto-go/poteto/oidc"
+	"github.com/poteto-go/poteto/utils"
 )
 
 type OidcConfig struct {
@@ -100,23 +100,10 @@ func verifyDecode(token, jwksUrl string, customVerifyTokenSignature func(oidc.Id
 	}
 
 	// decode payload
-	decodedPayload, err := jwtDecodeSegment(idToken.RawPayload)
+	decodedPayload, err := utils.JwtDecodeSegment(idToken.RawPayload)
 	if err != nil {
 		return []byte(""), err
 	}
 
 	return decodedPayload, nil
-}
-
-func jwtDecodeSegment(raw string) ([]byte, error) {
-	paddingLength := ((4 - len(raw)%4) % 4)
-	padding := strings.Repeat("=", paddingLength)
-	padded := strings.Join([]string{raw, padding}, "")
-
-	decoded, err := base64.StdEncoding.DecodeString(padded)
-	if err != nil {
-		return []byte(""), err
-	}
-
-	return decoded, nil
 }

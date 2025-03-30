@@ -1,5 +1,11 @@
 package oidc
 
+import "errors"
+
+var JWKsUrls = map[string]string{
+	"google": "https://www.googleapis.com/oauth2/v1/certs",
+}
+
 type jwk struct {
 	E   string `json:"e"`
 	Kty string `json:"kty"`
@@ -13,6 +19,18 @@ type jwks struct {
 	Keys []jwk `json:"keys"`
 }
 
-var JWKsUrls = map[string]string{
-	"google": "https://www.googleapis.com/oauth2/v1/certs",
+func (keys jwks) find(kid string) (jwk, error) {
+	var foundKey jwk
+	for _, key := range keys.Keys {
+		if key.Kid == kid {
+			foundKey = key
+			break
+		}
+	}
+
+	if foundKey != (jwk{}) {
+		return foundKey, nil
+	} else {
+		return jwk{}, errors.New("jwks keys not found")
+	}
 }
