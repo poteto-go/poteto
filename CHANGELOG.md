@@ -9,13 +9,14 @@
 @2025/03/30
 
 - FEAT: oidc middleware verify signature with jwks url by @poteto0 in #285
+
 ```go
 func main() {
   p := poteto.New()
   oidcConfig := middleware.OidcConfig {
     Idp: "google",
     ContextKey: "googleToken",
-    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+    JwksUrl: "https://www.googleapis.com/oauth2/v3/certs",
     CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
   }
   p.Register(
@@ -32,6 +33,7 @@ func main() {
   })
 }
 ```
+
 - ENH: support custom verify function by @poteto0 in #285
 - DOC: readme update by @poteto0 in #288
 - CHORE: update security policy in #289
@@ -52,6 +54,7 @@ func main() {
 @2025/03/27 ~
 
 - FEAT: client oidc token & parse it (support google format)
+
 ```go
 func main() {
   p := poteto.New()
@@ -68,6 +71,7 @@ func main() {
   })
 }
 ```
+
 - BUG: make jwsConfig public
 
 ## 1.7.X

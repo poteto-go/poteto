@@ -86,7 +86,7 @@ func main() {
   oidcConfig := middleware.OidcConfig {
     Idp: "google",
     ContextKey: "googleToken",
-    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+    JwksUrl: "https://www.googleapis.com/oauth2/v3/certs",
     CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
   }
   p.Register(
