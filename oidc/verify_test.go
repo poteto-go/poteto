@@ -296,7 +296,7 @@ func TestGetExponentialFromKey(t *testing.T) {
 				assert.Error(t, err)
 				assert.Equal(t, it.expectedValue, val) // Should return 0 on error
 				if it.errorMsg != "" {
-					assert.Contains(t, err.Error(), it.errorMsg)
+					assert.ErrorContains(t, err, it.errorMsg)
 				}
 			} else {
 				assert.NoError(t, err)
