@@ -1,5 +1,41 @@
 # 1.x.x
 
+## 1.9.X
+
+@2025/03/30 ~
+
+### 1.9.0
+
+@2025/03/30
+
+- FEAT: oidc middleware verify signature with jwks url by @poteto0 in #285
+```go
+func main() {
+  p := poteto.New()
+  oidcConfig := middleware.OidcConfig {
+    Idp: "google",
+    ContextKey: "googleToken",
+    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+    CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
+  }
+  p.Register(
+    middleware.OidcWithConfig(
+      oidcConfig,
+    )
+  )
+  p.POST("/login", func(ctx poteto.Context) error {
+      var claims oidc.GoogleOidcClaims
+      token, _ := ctx.Get("googleToken")
+      json.Unmarshal(token.([]byte), &claims)
+      ...
+      return ctx.JSON(200, map[string]string{"message": "success"})
+  })
+}
+```
+- ENH: support custom verify function by @poteto0 in #285
+- DOC: readme update by @poteto0 in #288
+- CHORE: update security policy in #289
+
 ## 1.8.X
 
 @2025/03/27 ~
