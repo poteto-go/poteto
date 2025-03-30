@@ -30,7 +30,7 @@ jobs:
       - name: remove ruleguard path
         run: cat cover.out.tmp | grep -v "github.com/poteto-go/poteto/rules" > coverage.out.tmp
       - name: remove not constant path
-        run: cat coverage.out.tmp | grep -v "github.com/poteto-go/poteto/constant" > coverage.txt
+        run: cat coverage.out.tmp | grep -v "github.com/poteto-go/poteto/constant" | grep -v "github.com/poteto-go/poteto/oidc" > coverage.out.txt
 
       - name: upload coverage
         uses: codecov/codecov-action@v1

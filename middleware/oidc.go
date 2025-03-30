@@ -1,40 +1,60 @@
 package middleware
 
 import (
-	"encoding/base64"
 	"errors"
 	"strings"
 
 	"github.com/poteto-go/poteto"
+	"github.com/poteto-go/poteto/oidc"
+	"github.com/poteto-go/poteto/utils"
 )
 
 type OidcConfig struct {
-	// google
 	Idp        string `yaml:"idp"`
 	ContextKey string `yaml:"context_key"`
+	JwksUrl    string `yaml:"jwks_url"`
+	// you can set custom verify signature callback
+	CustomVerifyTokenSignature func(idToken oidc.IdToken, jwksUrl string) error `yaml:"-"`
+}
+
+var OidcWithoutVerifyConfig = OidcConfig{
+	Idp:                        "google",
+	ContextKey:                 "googleToken",
+	JwksUrl:                    "",
+	CustomVerifyTokenSignature: nil,
 }
 
 var DefaultOidcConfig = OidcConfig{
-	Idp:        "google",
-	ContextKey: "googleToken",
+	Idp:                        "google",
+	ContextKey:                 "googleToken",
+	JwksUrl:                    "",
+	CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
 }
 
-// Oidc set token -> context
+// Oidc verify signature by jwks url & set token -> context
 //
 // You can decode with oidc.GoogleOidcClaims
 //
 //	func main() {
 //	  p := poteto.New()
+//	  oidcConfig := middleware.OidcConfig {
+//	    Idp: "google",
+//	    ContextKey: "googleToken",
+//	    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+//	      CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
+//	  }
 //	  p.Register(
 //	    middleware.OidcWithConfig(
-//	      middleware.DefaultOidcConfig,
+//	      oidcConfig,
 //	    )
 //	  )
 //	  p.POST("/login", func(ctx poteto.Context) error {
 //	      var claims oidc.GoogleOidcClaims
 //	      token, _ := ctx.Get("googleToken")
 //	      json.Unmarshal(token.([]byte), &claims)
-//	   })
+//	      ...
+//	      return ctx.JSON(200, map[string]string{"message": "success"})
+//	  })
 //	}
 func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 	if cfg.ContextKey == "" {
@@ -45,6 +65,10 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 		cfg.Idp = DefaultOidcConfig.Idp
 	}
 
+	if cfg.JwksUrl == "" {
+		cfg.JwksUrl = oidc.JWKsUrls[cfg.Idp]
+	}
+
 	return func(next poteto.HandlerFunc) poteto.HandlerFunc {
 		return func(ctx poteto.Context) error {
 			authValue, err := extractBearer(ctx)
@@ -52,7 +76,7 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 				return err
 			}
 
-			token, err := decode(authValue)
+			token, err := verifyDecode(authValue, cfg.JwksUrl, cfg.CustomVerifyTokenSignature)
 			if err != nil {
 				return err
 			}
@@ -63,19 +87,28 @@ func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 	}
 }
 
-func decode(token string) ([]byte, error) {
+func verifyDecode(token, jwksUrl string, customVerifyTokenSignature func(oidc.IdToken, string) error) ([]byte, error) {
 	splitToken := strings.Split(token, ".")
 	if len(splitToken) != 3 {
 		return []byte(""), errors.New("invalid token")
 	}
-	payload := splitToken[1]
 
-	// base64 needs 4* length
-	paddingLength := ((4 - len(payload)%4) % 4)
-	padding := strings.Repeat("=", paddingLength)
-	paddedPayload := strings.Join([]string{payload, padding}, "")
+	idToken := oidc.IdToken{
+		RawToken:     token,
+		RawHeader:    splitToken[0],
+		RawPayload:   splitToken[1],
+		RawSignature: splitToken[2],
+	}
 
-	decodedPayload, err := base64.StdEncoding.DecodeString(paddedPayload)
+	if customVerifyTokenSignature != nil {
+		err := customVerifyTokenSignature(idToken, jwksUrl)
+		if err != nil {
+			return []byte(""), err
+		}
+	}
+
+	// decode payload
+	decodedPayload, err := utils.JwtDecodeSegment(idToken.RawPayload)
 	if err != nil {
 		return []byte(""), err
 	}
