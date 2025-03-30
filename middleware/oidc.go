@@ -52,7 +52,9 @@ var DefaultOidcConfig = OidcConfig{
 //	      var claims oidc.GoogleOidcClaims
 //	      token, _ := ctx.Get("googleToken")
 //	      json.Unmarshal(token.([]byte), &claims)
-//	   })
+//	      ...
+//	      return ctx.JSON(200, map[string]string{"message": "success"})
+//	  })
 //	}
 func OidcWithConfig(cfg OidcConfig) poteto.MiddlewareFunc {
 	if cfg.ContextKey == "" {

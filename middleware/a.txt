@@ -1,0 +1,21 @@
+func main() {
+  p := poteto.New()
+  oidcConfig := middleware.OidcConfig {
+    Idp: "google",
+    ContextKey: "googleToken",
+    JwksUrl: "https://www.googleapis.com/oauth2/v1/certs",
+      CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
+  }
+  p.Register(
+    middleware.OidcWithConfig(
+      oidcConfig,
+    )
+  )
+  p.POST("/login", func(ctx poteto.Context) error {
+      var claims oidc.GoogleOidcClaims
+      token, _ := ctx.Get("googleToken")
+      json.Unmarshal(token.([]byte), &claims)
+      ...
+      return ctx.JSON(200, map[string]string{"message": "success"})
+  })
+}
