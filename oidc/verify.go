@@ -14,8 +14,77 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/patrickmn/go-cache"
 	"github.com/poteto-go/poteto/utils"
 )
+
+// Cache jwk
+//
+// To be default at v2
+func CachedVerifyTokenSignature(idToken IdToken, pCache *cache.Cache, jwksUrl string) error {
+	// decode header
+	byteHeader, err := utils.JwtDecodeSegment(idToken.RawHeader)
+	if err != nil {
+		return err
+	}
+
+	header := Header{}
+	if err := json.Unmarshal(byteHeader, &header); err != nil {
+		return err
+	}
+	// Assign header back to idToken.Header. This was missing before but needed by getJwk.
+	idToken.Header = header
+
+	var key jwk
+	cachedKey, ok := pCache.Get(jwksUrl)
+	if ok {
+		key = cachedKey.(jwk)
+	} else {
+		// verify signature
+		keyFound, err := getJwk(idToken, jwksUrl)
+		if err != nil {
+			return err
+		}
+
+		pCache.Set(
+			jwksUrl,
+			keyFound,
+			cache.DefaultExpiration,
+		)
+	}
+
+	// base64.RawURLEncoding.DecodeString(key.N)
+	byteN, err := utils.JwtUrlDecodeSegment(key.N)
+	if err != nil {
+		return err
+	}
+
+	exponent, err := getExponentialFromKey(key.E)
+	if err != nil {
+		return err
+	}
+
+	pubKey := &rsa.PublicKey{
+		N: new(big.Int).SetBytes(byteN),
+		E: exponent,
+	}
+
+	headerAndPayload := fmt.Sprintf("%s.%s", idToken.RawHeader, idToken.RawPayload)
+	sha := sha256.New()
+	sha.Write([]byte(headerAndPayload))
+
+	decSignature, err := utils.JwtUrlDecodeSegment(idToken.RawSignature)
+	if err != nil {
+		return err
+	}
+
+	// Assuming ALG is RS256 based on crypto/sha256 usage
+	if err := rsa.VerifyPKCS1v15(pubKey, crypto.SHA256, sha.Sum(nil), decSignature); err != nil {
+		return fmt.Errorf("signature verification failed: %w", err)
+	}
+
+	return nil
+}
 
 // DefaultVerifyTokenSignature verifies the signature of an ID token using JWKS.
 func DefaultVerifyTokenSignature(idToken IdToken, jwksUrl string) error {
