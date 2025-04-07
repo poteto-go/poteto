@@ -4,11 +4,17 @@
 
 @2025/04/07 ~
 
+### 1.10.1
+
+@2025/04/07 ~
+
+- CHORE: fix typo by @poteto0 in #297
+
 ### 1.10.0
 
 @2025/04/07 ~
 
-- FEAT: cache (jwk) mode for oidc by @poteto in #295
+- FEAT: cache (jwk) mode for oidc by @poteto0 in #295
 
 ```go
 // new oidc with cache mode
