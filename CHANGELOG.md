@@ -1,5 +1,32 @@
 # 1.x.x
 
+## 1.10.X
+
+@2025/04/07 ~
+
+### 1.10.0
+
+@2025/04/07 ~
+
+- FEAT: cache (jwk) mode for oidc by @poteto in #295
+
+```go
+// new oidc with cache mode
+oidcConfig := middleware.OidcConfig {
+  Idp: "google",
+  ContextKey: "googleToken",
+  CacheMode: true,
+  JwksUrl: "https://www.googleapis.com/oauth2/v3/certs",
+  CachedVerifyTokenSignature: oidc.CachedVerifyTokenSignature,
+}
+
+p.Register(
+  middleware.OidcWithConfig(
+    oidcConfig,
+  )
+)
+```
+
 ## 1.9.X
 
 @2025/03/30 ~
