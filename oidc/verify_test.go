@@ -313,7 +313,7 @@ func TestCachedVerifyTokenSignature(t *testing.T) {
 
 		// 1. First call (Cache Miss)
 		err := CachedVerifyTokenSignature(validToken, pCache, jwksUrl)
-		assert.NotNil(t, err)
+		assert.Nil(t, err)
 		assert.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "JWKS should be requested on first call")
 
 		// Verify key is cached
