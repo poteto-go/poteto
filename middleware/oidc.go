@@ -58,7 +58,7 @@ var DefaultOidcConfig = OidcConfig{
 //	  oidcConfig := middleware.OidcConfig {
 //	    Idp: "google",
 //	    ContextKey: "googleToken",
-//	      CacheMode: true,
+//	    CacheMode: true,
 //	    JwksUrl: "https://www.googleapis.com/oauth2/v3/certs",
 //	    CachedVerifyTokenSignature: oidc.CachedVerifyTokenSignature,
 //	  }
