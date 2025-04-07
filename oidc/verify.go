@@ -51,6 +51,7 @@ func CachedVerifyTokenSignature(idToken IdToken, pCache *cache.Cache, jwksUrl st
 			keyFound,
 			cache.DefaultExpiration,
 		)
+		key = keyFound
 	}
 
 	// base64.RawURLEncoding.DecodeString(key.N)
