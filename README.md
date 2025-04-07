@@ -84,10 +84,11 @@ func main() {
   p := poteto.New()
 
   oidcConfig := middleware.OidcConfig {
-    Idp: "google",
-    ContextKey: "googleToken",
+	  Idp: "google",
+		ContextKey: "googleToken",
+    CacheMode: true,
     JwksUrl: "https://www.googleapis.com/oauth2/v3/certs",
-    CustomVerifyTokenSignature: oidc.DefaultVerifyTokenSignature,
+    CachedVerifyTokenSignature: oidc.CachedVerifyTokenSignature,
   }
   p.Register(
     middleware.OidcWithConfig(
