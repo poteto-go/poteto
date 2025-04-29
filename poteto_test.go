@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
@@ -575,4 +576,20 @@ func TestPoteto_Api(t *testing.T) {
 	assert.Equal(t, p.Check(http.MethodPost, "/"), false)
 	assert.Equal(t, p.Check(http.MethodGet, "/users"), false)
 	assert.Equal(t, p.Check(http.MethodGet, "/users/1"), true)
+}
+
+func TestPoteto_SetErrorHandler(t *testing.T) {
+	// Arrange
+	handler := func(err error, ctx Context) {}
+	err := errors.New("error")
+	w := httptest.NewRecorder()
+	ctx := NewContext(w, nil)
+
+	// Act
+	p := New().(*poteto)
+	p.SetErrorHandler(handler)
+	p.ErrorHandler(err, ctx)
+
+	// Assert
+	assert.Equal(t, 200, w.Result().StatusCode)
 }

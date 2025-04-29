@@ -4,14 +4,20 @@
 
 @2025/04/07 ~
 
+### 1.10.3
+
+@2025/04/30 ~
+
+- feat: `poteto.SetErrorHandler` by @poteto0 in #304
+
 ### 1.10.2
 
 @2025/04/30 ~
 
-ref: make http params public for ut by @poteto0 in #303
-patch: errorhandler by @poteto0 in #302
-vuln: bump golang.org/x/net from 0.36.0 to 0.38.0 in #300
-chore(deps): bump github.com/goccy/go-yaml from 1.17.0 to 1.17.1 in #298
+- ref: make http params public for ut by @poteto0 in #303
+- patch: errorhandler by @poteto0 in #302
+- vuln: bump golang.org/x/net from 0.36.0 to 0.38.0 in #300
+- chore(deps): bump github.com/goccy/go-yaml from 1.17.0 to 1.17.1 in #298
 
 ### 1.10.1
 
