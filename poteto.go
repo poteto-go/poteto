@@ -95,6 +95,8 @@ type Poteto interface {
 	//   )
 	// }
 	Chain(middlewares ...MiddlewareFunc) func(HandlerFunc) HandlerFunc
+
+	SetErrorHandler(handler ErrorHandlerFunc)
 }
 
 type poteto struct {
@@ -511,4 +513,8 @@ func (p *poteto) Chain(middlewares ...MiddlewareFunc) func(HandlerFunc) HandlerF
 		}
 		return handler
 	}
+}
+
+func (p *poteto) SetErrorHandler(handler ErrorHandlerFunc) {
+	p.ErrorHandler = handler
 }
