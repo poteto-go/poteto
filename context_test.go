@@ -183,7 +183,7 @@ func TestContext_SetQueryParam(t *testing.T) {
 			ctx.SetQueryParam(it.queryParams)
 
 			// Assert
-			assert.Equal(t, len(ctx.httpParams.(*httpParam).queryParams), it.expectedCount)
+			assert.Equal(t, len(ctx.httpParams.(*httpParam).QueryParams), it.expectedCount)
 
 			for key, value := range it.expected {
 				actualValue, ok := ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
