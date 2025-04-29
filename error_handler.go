@@ -30,5 +30,5 @@ func DefaultErrorHandler(err error, ctx Context) {
 	}
 
 	// Send response
-	err = ctx.JSON(httpErr.Code, message)
+	ctx.JSON(httpErr.Code, message)
 }
