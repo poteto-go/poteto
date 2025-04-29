@@ -11,8 +11,8 @@ type ParamUnit struct {
 }
 
 type httpParam struct {
-	pathParams  map[string]string
-	queryParams map[string]string
+	PathParams  map[string]string
+	QueryParams map[string]string
 }
 
 type HttpParam interface {
@@ -24,8 +24,8 @@ type HttpParam interface {
 
 func NewHttpParam() HttpParam {
 	httpParam := &httpParam{
-		pathParams:  make(map[string]string),
-		queryParams: make(map[string]string),
+		PathParams:  make(map[string]string),
+		QueryParams: make(map[string]string),
 	}
 
 	return httpParam
@@ -49,17 +49,17 @@ func (hp *httpParam) AddParam(paramType string, paramUnit ParamUnit) {
 func (hp *httpParam) selectParam(paramType string) map[string]string {
 	switch paramType {
 	case constant.ParamTypePath:
-		return hp.pathParams
+		return hp.PathParams
 	case constant.ParamTypeQuery:
-		return hp.queryParams
+		return hp.QueryParams
 	}
 	return make(map[string]string)
 }
 
 func (hp *httpParam) JsonSerialize() ([]byte, error) {
 	unionParams := map[string]map[string]string{
-		constant.ParamTypePath:  hp.pathParams,
-		constant.ParamTypeQuery: hp.queryParams,
+		constant.ParamTypePath:  hp.PathParams,
+		constant.ParamTypeQuery: hp.QueryParams,
 	}
 
 	v, err := json.Marshal(unionParams)
