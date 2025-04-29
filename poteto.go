@@ -99,7 +99,7 @@ type Poteto interface {
 
 type poteto struct {
 	router          Router
-	errorHandler    HttpErrorHandler
+	ErrorHandler    ErrorHandlerFunc
 	middlewareTree  MiddlewareTree
 	logger          any
 	cache           sync.Pool
@@ -126,7 +126,7 @@ func New() Poteto {
 
 	return &poteto{
 		router:          NewRouter(),
-		errorHandler:    &httpErrorHandler{},
+		ErrorHandler:    DefaultErrorHandler,
 		middlewareTree:  NewMiddlewareTree(),
 		option:          DefaultPotetoOption,
 		potetoWorkflows: NewPotetoWorkflows(),
@@ -136,7 +136,7 @@ func New() Poteto {
 func NewWithOption(option PotetoOption) Poteto {
 	return &poteto{
 		router:          NewRouter(),
-		errorHandler:    &httpErrorHandler{},
+		ErrorHandler:    DefaultErrorHandler,
 		middlewareTree:  NewMiddlewareTree(),
 		option:          option,
 		potetoWorkflows: NewPotetoWorkflows(),
@@ -209,7 +209,7 @@ func (p *poteto) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	middlewares := p.middlewareTree.SearchMiddlewares(r.URL.Path)
 	handler = p.applyMiddleware(middlewares, handler)
 	if err := handler(ctx); err != nil {
-		p.errorHandler.HandleHttpError(err, ctx)
+		p.ErrorHandler(err, ctx)
 	}
 
 	// cached context

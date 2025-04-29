@@ -4,13 +4,8 @@ import (
 	"net/http"
 )
 
-type HttpErrorHandler interface {
-	HandleHttpError(err error, ctx Context)
-}
-
-type httpErrorHandler struct{}
-
-func (heh *httpErrorHandler) HandleHttpError(err error, ctx Context) {
+// This is defaultErrorHandler
+func DefaultErrorHandler(err error, ctx Context) {
 	if ctx.GetResponse().IsCommitted {
 		return
 	}

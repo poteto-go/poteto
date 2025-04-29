@@ -5,61 +5,65 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestHandleHttpError(t *testing.T) {
-	handler := httpErrorHandler{}
-
-	tests := []struct {
-		name     string
-		err      error
-		expected string
-	}{
-		{
-			"Test Not Handled Error -> Server Error",
-			errors.New("not httpError"),
-			`{"message":"Internal Server Error"}`,
-		},
-		{
-			"Test Handled Error",
-			NewHttpError(http.StatusBadRequest),
-			`{"message":"Bad Request"}`,
-		},
-		{
-			"Test wrapped Error",
-			&httpError{
-				Code:          http.StatusBadRequest,
-				Message:       "",
-				InternalError: NewHttpError(http.StatusBadRequest),
+func TestDefaultErrorHandler(t *testing.T) {
+	t.Run("handled case:", func(t *testing.T) {
+		tests := []struct {
+			name         string
+			err          error
+			expectedCode int
+			expected     string
+		}{
+			{
+				"Test Not Handled Error -> Server Error",
+				errors.New("not httpError"),
+				http.StatusInternalServerError,
+				`{"message":"Internal Server Error"}`,
 			},
-			`{"message":"Bad Request"}`,
-		},
-	}
+			{
+				"Test Handled Error",
+				NewHttpError(http.StatusBadRequest),
+				http.StatusBadRequest,
+				`{"message":"Bad Request"}`,
+			},
+			{
+				"Test wrapped Error",
+				&httpError{
+					Code:          http.StatusBadRequest,
+					Message:       "",
+					InternalError: NewHttpError(http.StatusBadRequest),
+				},
+				http.StatusBadRequest,
+				`{"message":"Bad Request"}`,
+			},
+		}
 
-	for _, it := range tests {
-		t.Run(it.name, func(t *testing.T) {
-			url := "/example.com"
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", url, nil)
-			ctx := NewContext(w, req).(*context)
+		for _, it := range tests {
+			t.Run(it.name, func(t *testing.T) {
+				w := httptest.NewRecorder()
+				ctx := NewContext(w, nil)
 
-			handler.HandleHttpError(it.err, ctx)
+				DefaultErrorHandler(it.err, ctx)
 
-			if res := w.Body.String()[0:20]; res != it.expected[0:20] {
-				t.Errorf(res)
-				t.Errorf(it.expected)
-				t.Errorf("Unmatched")
-			}
-		})
-	}
-}
+				assert.Equal(t, it.expectedCode, w.Result().StatusCode)
+				assert.Contains(t, w.Body.String(), it.expected)
+			})
+		}
+	})
 
-func TestIsCommitedHandlerHttpErrorCase(t *testing.T) {
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/users", nil)
-	ctx := NewContext(w, req).(*context)
-	ctx.GetResponse().IsCommitted = true
+	t.Run("has already committed => return 200", func(t *testing.T) {
+		// Arrange
+		w := httptest.NewRecorder()
+		ctx := NewContext(w, nil)
+		ctx.GetResponse().IsCommitted = true
 
-	handler := httpErrorHandler{}
-	handler.HandleHttpError(errors.New("error"), ctx)
+		// Act
+		DefaultErrorHandler(NewHttpError(http.StatusBadRequest), ctx)
+
+		// Assert
+		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+	})
 }
