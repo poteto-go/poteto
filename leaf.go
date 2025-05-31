@@ -1,5 +1,10 @@
 package poteto
 
+import (
+	"github.com/poteto-go/poteto/perror"
+	"github.com/poteto-go/poteto/utils"
+)
+
 /*
 / Leaf Make Router Great
 / p.Leaf("/users", func(leaf Leaf) {
@@ -60,46 +65,68 @@ func (l *leaf) Register(middlewares ...MiddlewareFunc) *middlewareTree {
 }
 
 func (l *leaf) GET(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.GET(path, handler)
+	return leafAdd(l, GET{}, addPath, handler)
 }
 
 func (l *leaf) POST(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.POST(path, handler)
+	return leafAdd(l, POST{}, addPath, handler)
 }
 
 func (l *leaf) PUT(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.PUT(path, handler)
+	return leafAdd(l, PUT{}, addPath, handler)
 }
 
 func (l *leaf) PATCH(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.PATCH(path, handler)
+	return leafAdd(l, PATCH{}, addPath, handler)
 }
 
 func (l *leaf) DELETE(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.DELETE(path, handler)
+	return leafAdd(l, DELETE{}, addPath, handler)
 }
 
 func (l *leaf) HEAD(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.HEAD(path, handler)
+	return leafAdd(l, HEAD{}, addPath, handler)
 }
 
 func (l *leaf) OPTIONS(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.OPTIONS(path, handler)
+	return leafAdd(l, OPTIONS{}, addPath, handler)
 }
 
 func (l *leaf) TRACE(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.TRACE(path, handler)
+	return leafAdd(l, TRACE{}, addPath, handler)
 }
 
 func (l *leaf) CONNECT(addPath string, handler HandlerFunc) error {
-	path := l.basePath + addPath
-	return l.poteto.CONNECT(path, handler)
+	return leafAdd(l, CONNECT{}, addPath, handler)
+}
+
+func leafAdd[M HTTPMethod](l *leaf, method M, addPath string, handler HandlerFunc) error {
+	path, err := utils.BuildSafeUrl(l.basePath, addPath)
+	if err != nil {
+		return err
+	}
+
+	switch any(method).(type) {
+	case GET:
+		return l.poteto.GET(path, handler)
+	case POST:
+		return l.poteto.POST(path, handler)
+	case PUT:
+		return l.poteto.PUT(path, handler)
+	case PATCH:
+		return l.poteto.PATCH(path, handler)
+	case DELETE:
+		return l.poteto.DELETE(path, handler)
+	case HEAD:
+		return l.poteto.HEAD(path, handler)
+	case OPTIONS:
+		return l.poteto.OPTIONS(path, handler)
+	case TRACE:
+		return l.poteto.TRACE(path, handler)
+	case CONNECT:
+		return l.poteto.CONNECT(path, handler)
+	default:
+		// not run
+		return perror.ErrUnSupportedHTTPMethod
+	}
 }
