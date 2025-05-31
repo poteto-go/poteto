@@ -19,6 +19,10 @@ https://github.com/poteto-go/poteto/blob/main/EXPERIMENT.md
 go get -u github.com/poteto-go/poteto@exp<version>
 ```
 
+## Deep Wiki
+
+https://deepwiki.com/poteto-go/poteto
+
 ## Quick Start
 
 ```go
