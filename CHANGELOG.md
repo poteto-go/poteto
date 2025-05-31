@@ -1,5 +1,16 @@
 # 1.x.x
 
+## 1.11.X
+
+@2025/05/31 ~
+
+### 1.11.0
+
+@2025/05/31 ~
+
+- feat: safe url build on leaf by @poteto0 in #312
+- ref: refactor http method type on leaf by @poteto0 in #312
+
 ## 1.10.X
 
 @2025/04/07 ~
