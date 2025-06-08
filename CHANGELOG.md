@@ -1,5 +1,16 @@
 # 1.x.x
 
+## 1.12.X
+
+@2025/06/08 ~
+
+### 1.12.0
+
+@2025/06/08 ~
+
+- pef: memory allocate optimized by @poteto0 in #317
+- chore(deps): bump github.com/goccy/go-yaml from 1.17.1 to 1.18.0 in #314
+
 ## 1.11.X
 
 @2025/05/31 ~
