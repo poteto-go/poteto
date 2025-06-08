@@ -24,3 +24,36 @@ func TestIsSliceEqual(t *testing.T) {
 		})
 	}
 }
+
+func TestBuildString(t *testing.T) {
+	tests := []struct {
+		name     string
+		values   []string
+		expected string
+	}{
+		{
+			name:     "Empty slice",
+			values:   []string{},
+			expected: "",
+		},
+		{
+			name:     "Single value",
+			values:   []string{"hello"},
+			expected: "hello",
+		},
+		{
+			name:     "Multiple values",
+			values:   []string{"hello", "world", "!!"},
+			expected: "hello, world, !!",
+		},
+	}
+
+	for _, it := range tests {
+		t.Run(it.name, func(t *testing.T) {
+			result := BuildString(it.values...)
+			if result != it.expected {
+				t.Errorf("Expected %s, got %s", it.expected, result)
+			}
+		})
+	}
+}
