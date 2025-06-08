@@ -3,6 +3,7 @@ package poteto
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -67,4 +68,36 @@ func BenchmarkContext_RequestId(b *testing.B) {
 			}
 		})
 	}
+}
+
+func BenchmarkContextPooling(b *testing.B) {
+	p := New().(*poteto)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest("GET", "/test", nil)
+
+			ctx := p.initializeContext(w, r)
+			p.cache.Put(ctx)
+		}
+	})
+}
+
+func BenchmarkParameterProcessing(b *testing.B) {
+	queryParams := url.Values{
+		"filter": {"active", "verified"},
+		"sort":   {"name"},
+		"limit":  {"10"},
+	}
+
+	b.Run("Current", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			ctx := NewContext(nil, nil).(*context)
+			ctx.SetQueryParam(queryParams)
+		}
+	})
 }

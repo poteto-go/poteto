@@ -50,6 +50,11 @@ type Response interface {
 		https://go.dev/src/net/http/responsecontroller.go
 	*/
 	Unwrap() http.ResponseWriter
+
+	/*
+		reset response
+	*/
+	Reset(w http.ResponseWriter)
 }
 
 type response struct {
@@ -111,4 +116,11 @@ func (r *response) Header() http.Header {
 
 func (r *response) Unwrap() http.ResponseWriter {
 	return r.Writer
+}
+
+func (r *response) Reset(w http.ResponseWriter) {
+	r.Writer = w
+	r.Status = 0
+	r.Size = 0
+	r.IsCommitted = false
 }

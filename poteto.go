@@ -310,7 +310,7 @@ func (p *poteto) RunTLS(addr string, cert, key []byte) error {
 		if p.option.DebugMode {
 			utils.PotetoPrint(
 				fmt.Sprintf(
-					"workflows.ApplyStartUpWorkflows reverted with %s",
+					"poteto.setupServer reverted with %s",
 					err.Error(),
 				),
 			)

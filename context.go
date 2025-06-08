@@ -11,7 +11,6 @@ import (
 	"github.com/harakeishi/gats"
 	"github.com/poteto-go/poteto/constant"
 	"github.com/poteto-go/poteto/utils"
-	"github.com/poteto-go/tslice"
 )
 
 type Context interface {
@@ -53,9 +52,10 @@ type Context interface {
 
 	JsonDeserialize(object any) error
 
-	SetQueryParam(queryParams url.Values)
-
+	// TODO: delete > 2.0
 	SetParam(paramType string, paramUnit ParamUnit)
+
+	SetQueryParam(queryParams url.Values)
 
 	// Get path parameter
 	// func handler(ctx poteto.Context) error {
@@ -220,28 +220,37 @@ func (ctx *context) SetQueryParam(queryParams url.Values) {
 		return
 	}
 
-	for key, value := range queryParams {
-		if len(value) == 0 {
+	// プリアロケートされたバッファを使用
+	for key, values := range queryParams {
+		if len(values) == 0 {
 			continue
 		}
 
-		paramUnit := ParamUnit{key, tslice.ToString(value)}
+		value := utils.BuildString(values...)
 
-		ctx.SetParam(constant.ParamTypeQuery, paramUnit)
+		ctx.httpParams.AddQueryParam(ParamUnit{key, value})
 	}
 }
 
 func (ctx *context) SetParam(paramType string, paramUnit ParamUnit) {
-	ctx.httpParams.AddParam(paramType, paramUnit)
+	if paramType == constant.ParamTypePath {
+		ctx.httpParams.AddPathParam(paramUnit)
+		return
+	}
+
+	if paramType == constant.ParamTypeQuery {
+		ctx.httpParams.AddQueryParam(paramUnit)
+		return
+	}
 }
 
 func (ctx *context) PathParam(key string) (string, bool) {
 	key = constant.ParamPrefix + key
-	return ctx.httpParams.GetParam(constant.ParamTypePath, key)
+	return ctx.httpParams.GetPathParam(key)
 }
 
 func (ctx *context) QueryParam(key string) (string, bool) {
-	return ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
+	return ctx.httpParams.GetQueryParam(key)
 }
 
 func (ctx *context) Bind(object any) error {
@@ -313,8 +322,8 @@ func (ctx *context) Set(key string, val any) {
 }
 
 func (ctx *context) Get(key string) (any, bool) {
-	ctx.lock.Lock()
-	defer ctx.lock.Unlock()
+	ctx.lock.RLock()
+	defer ctx.lock.RUnlock()
 
 	val, ok := ctx.store[key]
 	return val, ok
@@ -359,10 +368,17 @@ func (ctx *context) RegisterTrustIPRange(ranges *net.IPNet) {
 // using same binder
 func (ctx *context) Reset(w http.ResponseWriter, r *http.Request) {
 	ctx.request = r
-	ctx.response = NewResponse(w)
-	ctx.httpParams = NewHttpParam()
-	ctx.store = make(map[string]any)
+	ctx.response.Reset(w)
+	ctx.httpParams.Reset()
+
+	// メモリ解放
+	for key := range ctx.store {
+		delete(ctx.store, key)
+	}
+
 	ctx.path = ""
+
+	// loggerはリセットない
 }
 
 func (ctx *context) SetLogger(logger any) {
