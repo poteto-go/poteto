@@ -20,6 +20,9 @@ type HttpParam interface {
 	GetParam(paramType, key string) (string, bool)
 	AddParam(paramType string, paramUnit ParamUnit)
 	JsonSerialize() ([]byte, error)
+
+	// reset params
+	Reset()
 }
 
 func NewHttpParam() HttpParam {
@@ -68,4 +71,9 @@ func (hp *httpParam) JsonSerialize() ([]byte, error) {
 	}
 
 	return v, nil
+}
+
+func (hp *httpParam) Reset() {
+	hp.PathParams = make(map[string]string)
+	hp.QueryParams = make(map[string]string)
 }

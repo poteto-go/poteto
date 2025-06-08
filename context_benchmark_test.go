@@ -68,3 +68,20 @@ func BenchmarkContext_RequestId(b *testing.B) {
 		})
 	}
 }
+
+func BenchmarkContextPooling(b *testing.B) {
+	p := New().(*poteto)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest("GET", "/test", nil)
+
+			ctx := p.initializeContext(w, r)
+			p.cache.Put(ctx)
+		}
+	})
+}
