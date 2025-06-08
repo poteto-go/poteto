@@ -11,7 +11,6 @@ import (
 	"github.com/harakeishi/gats"
 	"github.com/poteto-go/poteto/constant"
 	"github.com/poteto-go/poteto/utils"
-	"github.com/poteto-go/tslice"
 )
 
 type Context interface {
@@ -53,9 +52,10 @@ type Context interface {
 
 	JsonDeserialize(object any) error
 
-	SetQueryParam(queryParams url.Values)
-
+	// TODO: delete > 2.0
 	SetParam(paramType string, paramUnit ParamUnit)
+
+	SetQueryParam(queryParams url.Values)
 
 	// Get path parameter
 	// func handler(ctx poteto.Context) error {
@@ -220,14 +220,15 @@ func (ctx *context) SetQueryParam(queryParams url.Values) {
 		return
 	}
 
-	for key, value := range queryParams {
-		if len(value) == 0 {
+	// プリアロケートされたバッファを使用
+	for key, values := range queryParams {
+		if len(values) == 0 {
 			continue
 		}
 
-		paramUnit := ParamUnit{key, tslice.ToString(value)}
+		value := utils.BuildString(values...)
 
-		ctx.SetParam(constant.ParamTypeQuery, paramUnit)
+		ctx.httpParams.AddQueryParam(ParamUnit{key, value})
 	}
 }
 

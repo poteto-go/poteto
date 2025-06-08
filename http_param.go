@@ -105,6 +105,11 @@ func (hp *httpParam) JsonSerialize() ([]byte, error) {
 }
 
 func (hp *httpParam) Reset() {
-	hp.PathParams = make(map[string]string)
-	hp.QueryParams = make(map[string]string)
+	for key := range hp.PathParams {
+		delete(hp.PathParams, key)
+	}
+
+	for key := range hp.QueryParams {
+		delete(hp.QueryParams, key)
+	}
 }
