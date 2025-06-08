@@ -232,16 +232,24 @@ func (ctx *context) SetQueryParam(queryParams url.Values) {
 }
 
 func (ctx *context) SetParam(paramType string, paramUnit ParamUnit) {
-	ctx.httpParams.AddParam(paramType, paramUnit)
+	if paramType == constant.ParamTypePath {
+		ctx.httpParams.AddPathParam(paramUnit)
+		return
+	}
+
+	if paramType == constant.ParamTypeQuery {
+		ctx.httpParams.AddQueryParam(paramUnit)
+		return
+	}
 }
 
 func (ctx *context) PathParam(key string) (string, bool) {
 	key = constant.ParamPrefix + key
-	return ctx.httpParams.GetParam(constant.ParamTypePath, key)
+	return ctx.httpParams.GetPathParam(key)
 }
 
 func (ctx *context) QueryParam(key string) (string, bool) {
-	return ctx.httpParams.GetParam(constant.ParamTypeQuery, key)
+	return ctx.httpParams.GetQueryParam(key)
 }
 
 func (ctx *context) Bind(object any) error {

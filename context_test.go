@@ -231,9 +231,8 @@ func TestContext_PathParam(t *testing.T) {
 
 	patches.ApplyMethod(
 		reflect.TypeOf(ctx.httpParams),
-		"GetParam",
-		func(_ *httpParam, paramType, key string) (string, bool) {
-			assert.Equal(t, constant.ParamTypePath, paramType)
+		"GetPathParam",
+		func(_ *httpParam, key string) (string, bool) {
 			assert.Equal(t, ":id", key)
 			return "mocked_path_value", true
 		},
@@ -257,9 +256,8 @@ func TestContext_QueryParam(t *testing.T) {
 
 	patches.ApplyMethod(
 		reflect.TypeOf(ctx.httpParams),
-		"GetParam",
-		func(_ *httpParam, paramType, key string) (string, bool) {
-			assert.Equal(t, constant.ParamTypeQuery, paramType)
+		"GetQueryParam",
+		func(_ *httpParam, key string) (string, bool) {
 			assert.Equal(t, "test", key)
 			return "test", true
 		},

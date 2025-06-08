@@ -16,9 +16,16 @@ type httpParam struct {
 }
 
 type HttpParam interface {
+	// TODO: delete > 2.0
 	selectParam(paramType string) map[string]string
+	// TODO: delete > 2.0
 	GetParam(paramType, key string) (string, bool)
+	GetPathParam(key string) (string, bool)
+	GetQueryParam(key string) (string, bool)
+	// TODO: delete > 2.0
 	AddParam(paramType string, paramUnit ParamUnit)
+	AddPathParam(paramUnit ParamUnit)
+	AddQueryParam(paramUnit ParamUnit)
 	JsonSerialize() ([]byte, error)
 
 	// reset params
@@ -44,9 +51,33 @@ func (hp *httpParam) GetParam(paramType, key string) (string, bool) {
 	return "", false
 }
 
+func (hp *httpParam) GetPathParam(key string) (string, bool) {
+	if val := hp.PathParams[key]; val != "" {
+		return val, true
+	}
+
+	return "", false
+}
+
+func (hp *httpParam) GetQueryParam(key string) (string, bool) {
+	if val := hp.QueryParams[key]; val != "" {
+		return val, true
+	}
+
+	return "", false
+}
+
 func (hp *httpParam) AddParam(paramType string, paramUnit ParamUnit) {
 	targetParams := hp.selectParam(paramType)
 	targetParams[paramUnit.key] = paramUnit.value
+}
+
+func (hp *httpParam) AddPathParam(paramUnit ParamUnit) {
+	hp.PathParams[paramUnit.key] = paramUnit.value
+}
+
+func (hp *httpParam) AddQueryParam(paramUnit ParamUnit) {
+	hp.QueryParams[paramUnit.key] = paramUnit.value
 }
 
 func (hp *httpParam) selectParam(paramType string) map[string]string {
