@@ -76,6 +76,14 @@ func main() {
 }
 ```
 
+### middleware
+
+use `poteto-extensions/middleware`
+
+```bash
+go get github.com/poteto-go/poteto-extensions
+```
+
 ## OIDC
 
 poteto provides easily oidc middleware.
