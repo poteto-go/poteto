@@ -94,15 +94,7 @@ type Router interface {
 
 // Each Router has TrieTreeRouting by method
 type router struct {
-	routesGET     Route
-	routesPOST    Route
-	routesPUT     Route
-	routesPATCH   Route
-	routesDELETE  Route
-	routesHEAD    Route
-	routesOPTIONS Route
-	routesTRACE   Route
-	routesCONNECT Route
+	routes map[string]Route
 }
 
 /*
@@ -116,15 +108,17 @@ You can use only Router of course.
 */
 func NewRouter() Router {
 	return &router{
-		routesGET:     NewRoute(),
-		routesPOST:    NewRoute(),
-		routesPUT:     NewRoute(),
-		routesPATCH:   NewRoute(),
-		routesDELETE:  NewRoute(),
-		routesHEAD:    NewRoute(),
-		routesOPTIONS: NewRoute(),
-		routesTRACE:   NewRoute(),
-		routesCONNECT: NewRoute(),
+		routes: map[string]Route{
+			http.MethodGet:     NewRoute(),
+			http.MethodPost:    NewRoute(),
+			http.MethodPut:     NewRoute(),
+			http.MethodPatch:   NewRoute(),
+			http.MethodDelete:  NewRoute(),
+			http.MethodHead:    NewRoute(),
+			http.MethodOptions: NewRoute(),
+			http.MethodTrace:   NewRoute(),
+			http.MethodConnect: NewRoute(),
+		},
 	}
 }
 
@@ -200,26 +194,8 @@ func (r *router) DFS(method string) []routeLinear {
 }
 
 func (r *router) GetRoutesByMethod(method string) *route {
-	switch method {
-	case http.MethodGet:
-		return r.routesGET.(*route)
-	case http.MethodPost:
-		return r.routesPOST.(*route)
-	case http.MethodPut:
-		return r.routesPUT.(*route)
-	case http.MethodPatch:
-		return r.routesPATCH.(*route)
-	case http.MethodDelete:
-		return r.routesDELETE.(*route)
-	case http.MethodHead:
-		return r.routesHEAD.(*route)
-	case http.MethodOptions:
-		return r.routesOPTIONS.(*route)
-	case http.MethodTrace:
-		return r.routesTRACE.(*route)
-	case http.MethodConnect:
-		return r.routesCONNECT.(*route)
-	default:
-		return nil
+	if routes, ok := r.routes[method]; ok {
+		return routes.(*route)
 	}
+	return nil
 }
