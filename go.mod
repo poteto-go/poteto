@@ -9,7 +9,7 @@ require (
 	github.com/agiledragon/gomonkey v2.0.2+incompatible
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/fatih/color v1.18.0
-	github.com/go-playground/validator/v10 v10.26.0
+	github.com/go-playground/validator/v10 v10.27.0
 	github.com/goccy/go-json v0.10.5
 	github.com/goccy/go-yaml v1.18.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
