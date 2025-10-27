@@ -18,7 +18,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/poteto-go/tslice v0.4.1
 	github.com/stretchr/testify v1.11.0
-	github.com/ybbus/jsonrpc/v3 v3.1.6
+	github.com/ybbus/jsonrpc/v3 v3.1.7
 )
 
 require (
